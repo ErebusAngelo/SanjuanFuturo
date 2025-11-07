@@ -1,0 +1,120 @@
+/* Contenedor del título superior */
+.title-container {
+    width: 100%;
+    text-align: center;
+    padding: 20px 40px 0;
+    margin-bottom: 10vh;
+    opacity: 0;
+    animation: fadeInUp 1s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Contenedor de la elipse */
+.ellipse-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    perspective: 1000px;
+    opacity: 0;
+    animation: fadeInScale 1.2s ease-out 0.5s forwards;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Elipse con rotación como planeta Tierra */
+.rotating-ellipse {
+    width: 100%;
+    height: auto;
+    max-width: 500px;
+    filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.6))
+            drop-shadow(0 0 60px rgba(0, 212, 255, 0.4))
+            drop-shadow(0 0 90px rgba(0, 212, 255, 0.2));
+    animation: rotatePlanet 20s linear infinite,
+               ellipseGlow 3s ease-in-out infinite;
+}
+
+/* Animación de rotación como la Tierra sobre su eje */
+@keyframes rotatePlanet {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes ellipseGlow {
+    0%, 100% {
+        filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.6))
+                drop-shadow(0 0 60px rgba(0, 212, 255, 0.4))
+                drop-shadow(0 0 90px rgba(0, 212, 255, 0.2));
+    }
+    50% {
+        filter: drop-shadow(0 0 40px rgba(0, 212, 255, 0.8))
+                drop-shadow(0 0 80px rgba(0, 212, 255, 0.6))
+                drop-shadow(0 0 120px rgba(0, 212, 255, 0.4));
+    }
+}
+
+/* Responsive */
+@media screen and (max-width: 1080px) {
+    .title-container {
+        margin-bottom: 8vh;
+        padding-top: 15px;
+    }
+    
+    .ellipse-container {
+        max-width: 500px;
+    }
+    
+    .rotating-ellipse {
+        max-width: 400px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .title-container {
+        margin-bottom: 6vh;
+        padding-top: 10px;
+    }
+    
+    .ellipse-container {
+        max-width: 400px;
+    }
+    
+    .rotating-ellipse {
+        max-width: 300px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .ellipse-container {
+        max-width: 300px;
+    }
+    
+    .rotating-ellipse {
+        max-width: 250px;
+    }
+}
