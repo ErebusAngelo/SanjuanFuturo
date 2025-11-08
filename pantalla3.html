@@ -10,17 +10,59 @@
 </head>
 <body>
     <div class="main-container">
-        <!-- Título superior -->
-        <div class="title-container">
-            <h1 class="main-title">
-                <span class="title-top">EL SAN JUAN QUE</span>
-                <span class="title-bottom">QUIERO</span>
-            </h1>
-        </div>
+        <!-- Header con título y usuario -->
+        <header class="page-header">
+            <!-- Título a la izquierda -->
+            <div class="header-left">
+                <p class="text-subtitle">EL SAN JUAN QUE</p>
+                <h1 class="text-title">QUIERO</h1>
+            </div>
+            
+            <!-- Usuario a la derecha -->
+            <div class="header-right">
+                <span class="user-name" id="userName">Usuario</span>
+                <div class="user-icon">
+                    <svg width="55" height="55" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="20" cy="20" r="19" stroke="#00D4FF" stroke-width="2"/>
+                        <circle cx="20" cy="15" r="6" fill="#00D4FF"/>
+                        <path d="M8 32C8 26 12 22 20 22C28 22 32 26 32 32" stroke="#00D4FF" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+            </div>
+        </header>
         
-        <!-- Elipse con animación de rotación -->
-        <div class="ellipse-container">
-            <img src="assets/ellipse1.svg" alt="Elipse" class="rotating-ellipse">
+        <!-- Contenedor de Oportunidades -->
+        <div class="opportunities-section">
+            <!-- Contenedor del label con barra y rectángulo -->
+            <div class="opportunities-container">
+                <!-- Fondo del rectángulo -->
+                <img src="assets/rectangulofondo.png" alt="Fondo" class="opportunities-rectangle">
+                
+                <!-- Barra superior (barra2.svg) -->
+                <img src="assets/barra2.svg" alt="Barra Superior" class="opportunities-bar">
+                
+                <!-- Texto centrado -->
+                <h2 class="opportunities-text">OPORTUNIDADES</h2>
+            </div>
+            
+            <!-- Indicadores de categoría -->
+            <div class="category-indicators">
+                <div class="indicator active"></div>
+                <div class="indicator"></div>
+                <div class="indicator"></div>
+                <div class="indicator"></div>
+            </div>
+            
+            <!-- Elipse rotando (zona de drop) -->
+            <div class="ellipse-container" id="dropZone">
+                <img src="assets/ellipse1.svg" alt="Planeta" class="ellipse-planet">
+            </div>
+            
+            <!-- Archivos de categorías - Generados dinámicamente por JS -->
+            <div class="files-container" id="filesContainer">
+                <!-- Los archivos se generan dinámicamente desde pantalla3.js -->
+                <p class="drag-instruction">Arrastra al núcleo del futuro lo que quieras sumar</p>
+            </div>
         </div>
     </div>
     

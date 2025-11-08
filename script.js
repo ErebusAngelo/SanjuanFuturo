@@ -7,6 +7,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Reajustar en cambio de orientación o tamaño
     window.addEventListener('resize', adjustScale);
     window.addEventListener('orientationchange', adjustScale);
+    
+    // Redirección automática a pantalla2 después de 5 segundos
+    setTimeout(function() {
+        console.log('⏱️ Redirigiendo a pantalla2...');
+        window.location.href = 'pantalla2.html';
+    }, 5000);
 });
 
 function adjustScale() {

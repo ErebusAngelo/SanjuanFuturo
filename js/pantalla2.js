@@ -141,3 +141,22 @@ if (inputElement) {
         keyboard.setInput(event.target.value);
     });
 }
+
+// Manejar el click en el botón de enviar
+const submitButton = document.querySelector('.submit-button');
+if (submitButton) {
+    submitButton.addEventListener('click', function() {
+        const userName = inputElement.value.trim();
+        
+        if (userName) {
+            // Guardar el nombre en localStorage
+            localStorage.setItem('userName', userName);
+            
+            // Redirigir a pantalla3
+            window.location.href = 'pantalla3.html';
+        } else {
+            // Opcional: mostrar un mensaje de error o advertencia
+            alert('Por favor, escribe tu nombre');
+        }
+    });
+}
