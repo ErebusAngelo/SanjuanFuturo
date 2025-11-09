@@ -189,6 +189,15 @@
     filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.6))
             drop-shadow(0 0 15px rgba(0, 212, 255, 0.4));
     animation: rectanglePulse 2.5s ease-in-out infinite;
+    transition: filter 0.3s ease;
+}
+
+/* Iluminar rectángulo cuando el input está activo */
+.input-container.active .input-rectangle img {
+    filter: drop-shadow(0 0 20px rgba(0, 212, 255, 1))
+            drop-shadow(0 0 40px rgba(0, 212, 255, 0.8))
+            drop-shadow(0 0 60px rgba(0, 212, 255, 0.6)) !important;
+    animation: none;
 }
 
 @keyframes rectanglePulse {
@@ -225,6 +234,27 @@
     font-weight: 300;
 }
 
+/* Label que aparece sobre el input cuando está activo */
+.input-label {
+    position: absolute;
+    top: -25px;
+    left: 30px;
+    font-family: 'Arkitech', sans-serif;
+    font-size: 14px;
+    color: #00D4FF;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.8),
+                 0 0 20px rgba(0, 212, 255, 0.6);
+}
+
+.input-container.active .input-label {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .submit-button {
     position: absolute;
     top: 0;
@@ -244,6 +274,15 @@
     filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.6))
             drop-shadow(0 0 15px rgba(0, 212, 255, 0.4));
     animation: arrowPulse 2s ease-in-out infinite;
+    transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+/* Iluminar flecha cuando el input está activo */
+.input-container.active .submit-button img {
+    filter: drop-shadow(0 0 20px rgba(0, 212, 255, 1))
+            drop-shadow(0 0 40px rgba(0, 212, 255, 0.8))
+            drop-shadow(0 0 60px rgba(0, 212, 255, 0.6)) !important;
+    animation: none;
 }
 
 @keyframes arrowPulse {
@@ -359,6 +398,28 @@
     box-shadow: 0 0 15px rgba(0, 212, 255, 0.8),
                 inset 0 0 12px rgba(0, 212, 255, 0.2) !important;
     transform: scale(0.98);
+}
+
+/* Efecto de iluminación fuerte al presionar tecla */
+.neon-keyboard .hg-button.key-pressed {
+    background: rgba(0, 212, 255, 0.3) !important;
+    box-shadow: 0 0 30px rgba(0, 212, 255, 1),
+                0 0 50px rgba(0, 212, 255, 0.8),
+                inset 0 0 20px rgba(0, 212, 255, 0.4) !important;
+    transform: scale(0.95);
+    animation: keyFlash 0.3s ease-out;
+}
+
+@keyframes keyFlash {
+    0% {
+        box-shadow: 0 0 30px rgba(0, 212, 255, 1),
+                    0 0 50px rgba(0, 212, 255, 0.8),
+                    inset 0 0 20px rgba(0, 212, 255, 0.4);
+    }
+    100% {
+        box-shadow: 0 0 15px rgba(0, 212, 255, 0.8),
+                    inset 0 0 12px rgba(0, 212, 255, 0.2);
+    }
 }
 
 .neon-keyboard .hg-button-bksp {

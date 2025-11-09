@@ -20,6 +20,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inicializar el teclado
     initKeyboard();
+    
+    // Agregar eventos de focus/blur al input
+    initInputEffects();
 });
 
 function startTyping() {
@@ -99,6 +102,9 @@ function onChange(input) {
 }
 
 function onKeyPress(button) {
+    // Iluminar tecla presionada
+    highlightKey(button);
+    
     if (button === "{shift}" || button === "{lock}") {
         handleShift();
     } else if (button === "{numbers}") {
@@ -107,6 +113,22 @@ function onKeyPress(button) {
         handleABC();
     } else if (button === "{enter}") {
         handleEnter();
+    }
+}
+
+// Iluminar tecla cuando se presiona
+function highlightKey(button) {
+    // Buscar el botón en el teclado
+    const keyElement = document.querySelector(`[data-skbtn="${button}"]`);
+    
+    if (keyElement) {
+        // Agregar clase de iluminación
+        keyElement.classList.add('key-pressed');
+        
+        // Remover clase después de 200ms
+        setTimeout(() => {
+            keyElement.classList.remove('key-pressed');
+        }, 200);
     }
 }
 
@@ -156,7 +178,24 @@ if (submitButton) {
             window.location.href = 'pantalla3.html';
         } else {
             // Opcional: mostrar un mensaje de error o advertencia
-            alert('Por favor, escribe tu nombre');
+            console.log('Por favor ingresa tu nombre');
+            inputElement.focus();
         }
+    });
+}
+
+// Efectos de iluminación en el input
+function initInputEffects() {
+    const inputContainer = document.querySelector('.input-container');
+    const nameInput = document.querySelector('.name-input');
+    
+    // Activar iluminación al hacer focus
+    nameInput.addEventListener('focus', function() {
+        inputContainer.classList.add('active');
+    });
+    
+    // Desactivar iluminación al perder focus
+    nameInput.addEventListener('blur', function() {
+        inputContainer.classList.remove('active');
     });
 }
