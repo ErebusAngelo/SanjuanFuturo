@@ -1,4 +1,5 @@
 {
   "comfyUrl": "http://localhost:8188",
-  "isRemote": false
+  "isRemote": false,
+  "numPlayers": 1
 }

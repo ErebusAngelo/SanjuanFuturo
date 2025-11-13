@@ -14,9 +14,12 @@ function setup() {
         p5Canvas.style.position = 'fixed';
         p5Canvas.style.top = '0';
         p5Canvas.style.left = '0';
-        p5Canvas.style.zIndex = '0';
+        p5Canvas.style.zIndex = '-1';
         p5Canvas.style.pointerEvents = 'none';
-        p5Canvas.style.display = 'none'; // Oculto por defecto
+        
+        // En avatar.html empieza oculto, en otras páginas visible
+        const isAvatarPage = window.location.pathname.includes('avatar.html');
+        p5Canvas.style.display = isAvatarPage ? 'none' : 'block';
     }
     
     // Crear partículas

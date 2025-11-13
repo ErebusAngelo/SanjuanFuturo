@@ -20,7 +20,7 @@ function loadConfig() {
         return JSON.parse(data);
     } catch (error) {
         console.error('Error loading config:', error);
-        return { comfyUrl: 'http://localhost:8188', isRemote: false };
+        return { comfyUrl: 'http://localhost:8188', isRemote: false, numPlayers: 3 };
     }
 }
 
@@ -168,8 +168,8 @@ function setupComfyWebSocketHandlers() {
             for (const image of images) {
                 const subfolder = '';
                 const parsedUrl = parseComfyUrl(config.comfyUrl);
-                const imageUrl = `${parsedUrl.baseUrl}/view?filename=${encodeURIComponent(image.filename)}&subfolder=${encodeURIComponent(subfolder)}&type=${encodeURIComponent(image.type)}`;
-                console.log('Downloading image from:', imageUrl);
+                const downloadUrl = `${parsedUrl.baseUrl}/view?filename=${encodeURIComponent(image.filename)}&subfolder=${encodeURIComponent(subfolder)}&type=${encodeURIComponent(image.type)}`;
+                console.log('Downloading image from:', downloadUrl);
 
                 // Notificar que está descargando
                 broadcastToClients({
@@ -179,21 +179,54 @@ function setupComfyWebSocketHandlers() {
                 });
 
                 const filename = path.join(__dirname, 'public', 'imagenes', subfolder, image.filename);
-                await downloadImage(imageUrl, filename, subfolder);
+                await downloadImage(downloadUrl, filename, subfolder);
                 console.log(`Downloaded image: ${filename}`);
 
-                wss.clients.forEach(client => {
-                    if (client.readyState === WebSocket.OPEN) {
-                        const imagePath = subfolder ? `/imagenes/${subfolder}/${image.filename}` : `/imagenes/${image.filename}`;
-                        const imageUrl = `${imagePath}`;
-                        console.log(`📤 Sending image URL to client: ${imageUrl}`);
-                        client.send(JSON.stringify({
-                            type: 'image_generated',
-                            url: imageUrl,
-                            prompt: details.prompt
-                        }));
-                    }
-                });
+                const imagePath = subfolder ? `/imagenes/${subfolder}/${image.filename}` : `/imagenes/${image.filename}`;
+                const imageUrl = `${imagePath}`;
+                console.log(`📤 Sending image URL to client: ${imageUrl}`);
+                
+                // Incrementar contador de imágenes generadas
+                systemState.imagesGenerated++;
+                
+                // Si es una imagen generada por el sistema (todos los jugadores), enviar al avatar
+                if (details.isSystemGenerated && systemState.avatar.ws && systemState.avatar.ws.readyState === WebSocket.OPEN) {
+                    systemState.avatar.ws.send(JSON.stringify({
+                        type: 'image_generated',
+                        url: imageUrl,
+                        prompt: details.prompt
+                    }));
+                    
+                    // Notificar al panel de control
+                    broadcastToControlPanel({
+                        type: 'image_generated',
+                        url: imageUrl
+                    });
+                    
+                    // Después de 15 segundos, reiniciar jugadores a index.html
+                    setTimeout(() => {
+                        for (const playerId in systemState.players) {
+                            const player = systemState.players[playerId];
+                            if (player.ws && player.ws.readyState === WebSocket.OPEN) {
+                                player.ws.send(JSON.stringify({
+                                    type: 'return_to_start'
+                                }));
+                            }
+                        }
+                        console.log('🔄 Jugadores redirigidos a inicio');
+                    }, 15000);
+                } else {
+                    // Enviar a todos los clientes (para promptgenerator.html)
+                    wss.clients.forEach(client => {
+                        if (client.readyState === WebSocket.OPEN) {
+                            client.send(JSON.stringify({
+                                type: 'image_generated',
+                                url: imageUrl,
+                                prompt: details.prompt
+                            }));
+                        }
+                    });
+                }
             }
         }
     });
@@ -220,8 +253,25 @@ setTimeout(() => {
     connectToComfyUI();
 }, 1000);
 
+// Sistema de gestión de jugadores y pantallas
+const systemState = {
+    numPlayers: config.numPlayers || 3,
+    players: {},
+    avatar: { connected: false, state: 'loop' },
+    controlPanel: null,
+    playerPrompts: {},
+    imagesGenerated: 0
+};
+
 wss.on('connection', async (ws, req) => {
     console.log('WebSocket client connected');
+    
+    // Extraer parámetros de la URL
+    const url = new URL(req.url, `http://${req.headers.host}`);
+    const playerId = url.searchParams.get('jugador');
+    
+    let clientType = 'unknown';
+    let clientId = null;
 
     // Enviar estado actual de conexión al nuevo cliente
     if (wsComfy && wsComfy.readyState === WebSocket.OPEN) {
@@ -235,9 +285,100 @@ wss.on('connection', async (ws, req) => {
 
     ws.on('message', async (data) => {
         const message = JSON.parse(data);
+        
+        // Registro de cliente
+        if (message.type === 'register') {
+            clientType = message.clientType;
+            
+            if (clientType === 'player') {
+                clientId = message.playerId;
+                systemState.players[clientId] = {
+                    ws: ws,
+                    connected: true,
+                    screen: message.screen || 'pantalla2',
+                    prompt: null,
+                    userName: null
+                };
+                
+                console.log(`✓ Jugador ${clientId} registrado en ${systemState.players[clientId].screen}`);
+                
+                // Enviar configuración del sistema al jugador
+                ws.send(JSON.stringify({
+                    type: 'system_config',
+                    numPlayers: systemState.numPlayers
+                }));
+                
+                // Notificar al panel de control
+                broadcastToControlPanel({
+                    type: 'player_connected',
+                    playerId: clientId,
+                    screen: systemState.players[clientId].screen
+                });
+            } else if (clientType === 'avatar') {
+                systemState.avatar.ws = ws;
+                systemState.avatar.connected = true;
+                console.log('✓ Pantalla Avatar registrada');
+                
+                broadcastToControlPanel({
+                    type: 'avatar_connected'
+                });
+            } else if (clientType === 'control_panel') {
+                systemState.controlPanel = ws;
+                console.log('✓ Panel de Control registrado');
+                
+                // Enviar estado actual del sistema
+                ws.send(JSON.stringify({
+                    type: 'system_state',
+                    state: {
+                        numPlayers: systemState.numPlayers,
+                        players: Object.fromEntries(
+                            Object.entries(systemState.players).map(([id, p]) => [
+                                id,
+                                { connected: p.connected, screen: p.screen }
+                            ])
+                        ),
+                        avatar: {
+                            connected: systemState.avatar.connected,
+                            state: systemState.avatar.state
+                        },
+                        imagesGenerated: systemState.imagesGenerated
+                    }
+                }));
+            }
+        }
+        
+        // Actualización de pantalla del jugador
+        if (message.type === 'player_screen_change' && clientType === 'player') {
+            systemState.players[clientId].screen = message.screen;
+            broadcastToControlPanel({
+                type: 'player_screen_changed',
+                playerId: clientId,
+                screen: message.screen
+            });
+        }
+        
+        // Guardar nombre de usuario
+        if (message.type === 'player_name' && clientType === 'player') {
+            systemState.players[clientId].userName = message.userName;
+            console.log(`✓ Jugador ${clientId}: ${message.userName}`);
+        }
+        
+        // Guardar selección de prompt del jugador
+        if (message.type === 'player_prompt' && clientType === 'player') {
+            systemState.players[clientId].prompt = message.prompt;
+            console.log(`✓ Jugador ${clientId} completó su selección`);
+            
+            // Verificar si todos los jugadores completaron
+            checkAllPlayersReady();
+        }
+        
+        // Generación de imagen (desde promptgenerator.html o sistema)
         if (message.type === 'generarImagen') {
             console.log(`📥 Prompt received: ${message.prompt}`);
             console.log(`📊 Parámetros:`, message.params);
+
+            // Cambiar estado del avatar a "loading"
+            changeAvatarState('loading');
 
             // Notificar al cliente que se está procesando
             ws.send(JSON.stringify({
@@ -249,10 +390,9 @@ wss.on('connection', async (ws, req) => {
             try {
                 const params = message.params || {};
                 const promptId = await generarImagen(message.prompt, params);
-                promptDetails[promptId] = { prompt: message.prompt, ws: ws }; // Guarda prompt y websocket
+                promptDetails[promptId] = { prompt: message.prompt, ws: ws };
 
                 console.log(`✓ Prompt queued with ID: ${promptId}`);
-                console.log(`🔍 WebSocket ComfyUI state: ${wsComfy ? wsComfy.readyState : 'null'} (1=OPEN, 0=CONNECTING, 2=CLOSING, 3=CLOSED)`);
                 ws.send(JSON.stringify({
                     type: 'generation_status',
                     status: 'processing',
@@ -268,11 +408,183 @@ wss.on('connection', async (ws, req) => {
                 }));
             }
         }
+        
+        // Solicitud de estado del sistema
+        if (message.type === 'request_system_state' && clientType === 'control_panel') {
+            ws.send(JSON.stringify({
+                type: 'system_state',
+                state: {
+                    numPlayers: systemState.numPlayers,
+                    players: Object.fromEntries(
+                        Object.entries(systemState.players).map(([id, p]) => [
+                            id,
+                            { connected: p.connected, screen: p.screen }
+                        ])
+                    ),
+                    avatar: {
+                        connected: systemState.avatar.connected,
+                        state: systemState.avatar.state
+                    },
+                    imagesGenerated: systemState.imagesGenerated
+                }
+            }));
+        }
+        
+        // Actualizar configuración
+        if (message.type === 'update_config' && clientType === 'control_panel') {
+            systemState.numPlayers = message.config.numPlayers;
+            
+            // Guardar en config.json
+            config.numPlayers = message.config.numPlayers;
+            saveConfig(config);
+            
+            console.log(`✓ Configuración actualizada y guardada: ${systemState.numPlayers} jugadores`);
+        }
+        
+        // Reiniciar sistema
+        if (message.type === 'reset_system' && clientType === 'control_panel') {
+            resetSystem();
+        }
     });
+    
     ws.on('close', () => {
         console.log('WebSocket client disconnected');
+        
+        if (clientType === 'player' && clientId) {
+            systemState.players[clientId].connected = false;
+            broadcastToControlPanel({
+                type: 'player_disconnected',
+                playerId: clientId
+            });
+        } else if (clientType === 'avatar') {
+            systemState.avatar.connected = false;
+            broadcastToControlPanel({
+                type: 'avatar_disconnected'
+            });
+        }
     });
 });
+
+// Funciones auxiliares del sistema
+function broadcastToControlPanel(message) {
+    if (systemState.controlPanel && systemState.controlPanel.readyState === WebSocket.OPEN) {
+        systemState.controlPanel.send(JSON.stringify(message));
+    }
+}
+
+function changeAvatarState(newState) {
+    systemState.avatar.state = newState;
+    
+    if (systemState.avatar.ws && systemState.avatar.ws.readyState === WebSocket.OPEN) {
+        systemState.avatar.ws.send(JSON.stringify({
+            type: 'change_state',
+            state: newState
+        }));
+    }
+    
+    broadcastToControlPanel({
+        type: 'avatar_state_changed',
+        state: newState
+    });
+}
+
+function checkAllPlayersReady() {
+    const activePlayers = Object.values(systemState.players)
+        .filter(p => p.connected && p.prompt);
+    
+    if (activePlayers.length >= systemState.numPlayers) {
+        console.log('✓ Todos los jugadores completaron sus selecciones');
+        
+        // Extraer palabras clave de todos los prompts
+        const allKeywords = [];
+        activePlayers.forEach(p => {
+            // Extraer palabras después de los dos puntos en cada sección
+            const matches = p.prompt.match(/:\s*([^.]+)/g);
+            if (matches) {
+                matches.forEach(match => {
+                    const words = match.replace(':', '').trim().split(',').map(w => w.trim());
+                    allKeywords.push(...words);
+                });
+            }
+        });
+        
+        // Crear prompt futurista y cyberpunk
+        const enhancedPrompt = `A futuristic cyberpunk vision of San Juan, Argentina in the year 2050. 
+Ultra-modern cityscape with neon lights, holographic displays, and advanced technology. 
+The city features: ${allKeywords.join(', ')}. 
+Style: cyberpunk, futuristic, neon-lit, high-tech, sci-fi, digital art, concept art, 
+cinematic lighting, vibrant colors, ultra detailed, 8k quality, masterpiece.
+Atmosphere: innovative, sustainable, technologically advanced.`;
+        
+        console.log(`📝 Prompt mejorado: ${enhancedPrompt}`);
+        
+        // Enviar al control panel
+        broadcastToControlPanel({
+            type: 'prompt_generated',
+            playerPrompts: activePlayers.map(p => ({
+                playerId: p.id,
+                prompt: p.prompt
+            })),
+            keywords: allKeywords,
+            finalPrompt: enhancedPrompt
+        });
+        
+        // Generar imagen con el prompt mejorado
+        setTimeout(() => {
+            generateCombinedImage(enhancedPrompt);
+        }, 2000);
+    }
+}
+
+async function generateCombinedImage(combinedPrompt) {
+    try {
+        changeAvatarState('loading');
+        
+        const params = {
+            steps: 20,
+            width: 1184,
+            height: 1184,
+            model: 'flux1-dev-fp8.safetensors',
+            guidance: 3.5,
+            loraName: 'Flux_SanJuanv1.safetensors',
+            loraStrength: 1.0
+        };
+        
+        const promptId = await generarImagen(combinedPrompt, params);
+        promptDetails[promptId] = { 
+            prompt: combinedPrompt, 
+            ws: systemState.avatar.ws,
+            isSystemGenerated: true
+        };
+        
+        console.log(`✓ Imagen del sistema en cola con ID: ${promptId}`);
+    } catch (error) {
+        console.error('❌ Error generando imagen del sistema:', error);
+        changeAvatarState('loop');
+    }
+}
+
+function resetSystem() {
+    console.log('🔄 Reiniciando sistema...');
+    
+    // Limpiar prompts de jugadores
+    Object.values(systemState.players).forEach(player => {
+        player.prompt = null;
+        player.userName = null;
+    });
+    
+    // Volver al estado inicial
+    changeAvatarState('loop');
+    
+    // Notificar a todos los jugadores
+    Object.values(systemState.players).forEach(player => {
+        if (player.ws && player.ws.readyState === WebSocket.OPEN) {
+            player.ws.send(JSON.stringify({
+                type: 'system_reset'
+            }));
+        }
+    });
+}
 
 io.on('connection', function(socket) {
     console.log('SOCKET IO');
@@ -288,6 +600,28 @@ io.on('connection', function(socket) {
 // API endpoints para configuración
 app.get('/api/config', (req, res) => {
     res.json(config);
+});
+
+// Endpoint para obtener imágenes de la galería
+app.get('/api/gallery-images', (req, res) => {
+    const imagesDir = path.join(__dirname, 'public', 'imagenes');
+    
+    try {
+        if (!fs.existsSync(imagesDir)) {
+            return res.json([]);
+        }
+        
+        const files = fs.readdirSync(imagesDir);
+        const imageFiles = files.filter(file => {
+            const ext = path.extname(file).toLowerCase();
+            return ['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(ext);
+        });
+        
+        res.json(imageFiles);
+    } catch (error) {
+        console.error('Error leyendo galería:', error);
+        res.status(500).json({ error: 'Error al cargar galería' });
+    }
 });
 
 // Endpoint para obtener modelos disponibles

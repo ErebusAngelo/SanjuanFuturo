@@ -4,8 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pantalla LED - Avatar</title>
-    <link rel="stylesheet" href="css/fonts.css">
     <style>
+        @font-face {
+            font-family: 'Roboto';
+            src: url('fonts/Roboto-Light.ttf') format('truetype');
+            font-weight: 300;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Arkitech';
+            src: url('fonts/Arkitech Medium.ttf') format('truetype');
+            font-weight: 500;
+            font-style: normal;
+        }
+    
         * {
             margin: 0;
             padding: 0;
@@ -135,8 +148,10 @@
         }
 
         .circle-content img {
-            width: 100%;
-            height: 100%;
+            max-width: 90%;
+            max-height: 90%;
+            width: auto;
+            height: auto;
             object-fit: contain;
         }
 
@@ -287,8 +302,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 75%;
-            height: 75%;
+            width: 525px;
+            height: 525px;
             border-radius: 50%;
             overflow: hidden;
             clip-path: circle(50%);
@@ -311,14 +326,14 @@
             height: 100%;
             position: relative;
             overflow: hidden;
-            padding: 60px 20px 20px 20px;
+            padding: 10px;
         }
 
         .gallery-scroll {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(6, 1fr);
-            gap: 20px;
+            gap: 8px;
             width: 100%;
             animation: scrollGallery 15s linear infinite;
         }
@@ -335,10 +350,10 @@
         .gallery-item {
             position: relative;
             aspect-ratio: 1;
-            border-radius: 15px;
+            border-radius: 8px;
             overflow: hidden;
-            border: 3px solid #00D4FF;
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
+            border: 1px solid #00D4FF;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
             transition: all 0.3s ease;
         }
 
@@ -404,28 +419,6 @@
             box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
         }
 
-        .audio-prompt {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 212, 255, 0.9);
-            color: #000;
-            padding: 15px 30px;
-            border-radius: 10px;
-            font-family: 'Arkitech', sans-serif;
-            font-size: 1.2rem;
-            font-weight: bold;
-            z-index: 1000;
-            animation: pulse 2s infinite;
-            cursor: pointer;
-            display: none;
-        }
-
-        .audio-prompt.show {
-            display: block;
-        }
-
         @keyframes pulse {
             0%, 100% { opacity: 0.8; transform: translateX(-50%) scale(1); }
             50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
@@ -452,7 +445,6 @@
     <canvas id="backgroundCanvas"></canvas>
     
     <div class="connection-indicator" id="connectionIndicator"></div>
-    <div class="audio-prompt" id="audioPrompt">🔊 Toca para activar el audio</div>
     
     <div class="led-screen">
         <!-- Estado 1: Video Loop (inicial) -->
@@ -529,7 +521,6 @@
                           style="filter: drop-shadow(0 0 5px rgba(0, 212, 255, 0.7)) drop-shadow(0 0 10px rgba(0, 212, 255, 0.4));" />
                 </svg>
                 <div class="gallery-content-circle">
-                    <h2 class="gallery-title">GALERÍA</h2>
                     <div class="gallery-grid" id="galleryGrid">
                         <!-- Imágenes se cargan dinámicamente -->
                     </div>
@@ -619,8 +610,13 @@
 
             switch(newState) {
                 case 'loop':
-                    document.getElementById('videoContainer').classList.add('active');
-                    document.getElementById('loopVideo').play();
+                    const videoContainer = document.getElementById('videoContainer');
+                    const loopVideo = document.getElementById('loopVideo');
+                    videoContainer.classList.add('active');
+                    if (loopVideo) {
+                        loopVideo.currentTime = 0; // Reiniciar video
+                        loopVideo.play().catch(e => console.log('Error playing video:', e));
+                    }
                     const p5CanvasLoop = document.getElementById('p5Canvas');
                     if (p5CanvasLoop) p5CanvasLoop.style.display = 'none';
                     break;
@@ -763,25 +759,12 @@
             }
         }
 
-        // Habilitar audio del video
-        function enableVideoAudio() {
+        // Activar audio del video al hacer click
+        function enableAudio() {
             const video = document.getElementById('loopVideo');
-            const audioPrompt = document.getElementById('audioPrompt');
-            
-            if (video) {
+            if (video && video.muted) {
                 video.muted = false;
-                video.play().then(() => {
-                    console.log('Audio habilitado');
-                    if (audioPrompt) {
-                        audioPrompt.classList.remove('show');
-                    }
-                }).catch(err => {
-                    console.log('Autoplay con audio bloqueado:', err);
-                    // Mostrar indicador para que el usuario active el audio
-                    if (audioPrompt) {
-                        audioPrompt.classList.add('show');
-                    }
-                });
+                console.log('Audio activado');
             }
         }
 
@@ -790,20 +773,9 @@
             connectWebSocket();
             loadExistingImages();
             
-            // Intentar habilitar audio automáticamente
-            setTimeout(() => {
-                enableVideoAudio();
-            }, 500);
-            
-            // Habilitar audio al primer click/touch en la página
-            const enableAudioOnInteraction = () => {
-                enableVideoAudio();
-                document.removeEventListener('click', enableAudioOnInteraction);
-                document.removeEventListener('touchstart', enableAudioOnInteraction);
-            };
-            
-            document.addEventListener('click', enableAudioOnInteraction);
-            document.addEventListener('touchstart', enableAudioOnInteraction);
+            // Activar audio al hacer click en cualquier parte
+            document.body.addEventListener('click', enableAudio, { once: true });
+            document.body.addEventListener('touchstart', enableAudio, { once: true });
         });
     </script>
 </body>
