@@ -343,6 +343,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const optionName = selectedOption.getAttribute("data-option")
       console.log("💧 DROP:", optionName)
       handleOptionDrop(optionName)
+      
+      // Agregar efecto de ripple en el shader si está habilitado
+      if (typeof window.addShaderRipple === 'function') {
+        window.addShaderRipple(x, y)
+      }
     }
 
     // Limpiar
