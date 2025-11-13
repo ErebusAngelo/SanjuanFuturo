@@ -301,6 +301,11 @@ wss.on('connection', async (ws, req) => {
                 };
                 
                 console.log(`✓ Jugador ${clientId} registrado en ${systemState.players[clientId].screen}`);
+                console.log(`📊 Estado actual de jugadores:`, Object.keys(systemState.players).map(id => ({
+                    id,
+                    connected: systemState.players[id].connected,
+                    screen: systemState.players[id].screen
+                })));
                 
                 // Enviar configuración del sistema al jugador
                 ws.send(JSON.stringify({
@@ -309,6 +314,7 @@ wss.on('connection', async (ws, req) => {
                 }));
                 
                 // Notificar al panel de control
+                console.log(`📢 Notificando al panel de control sobre jugador ${clientId}`);
                 broadcastToControlPanel({
                     type: 'player_connected',
                     playerId: clientId,
@@ -325,9 +331,14 @@ wss.on('connection', async (ws, req) => {
             } else if (clientType === 'control_panel') {
                 systemState.controlPanel = ws;
                 console.log('✓ Panel de Control registrado');
+                console.log('📊 Estado actual al registrar control panel:', {
+                    numPlayers: systemState.numPlayers,
+                    playersConnected: Object.keys(systemState.players).length,
+                    avatarConnected: systemState.avatar.connected
+                });
                 
                 // Enviar estado actual del sistema
-                ws.send(JSON.stringify({
+                const stateToSend = {
                     type: 'system_state',
                     state: {
                         numPlayers: systemState.numPlayers,
@@ -343,7 +354,9 @@ wss.on('connection', async (ws, req) => {
                         },
                         imagesGenerated: systemState.imagesGenerated
                     }
-                }));
+                };
+                console.log('📤 Enviando estado inicial al control panel:', stateToSend);
+                ws.send(JSON.stringify(stateToSend));
             }
         }
         
@@ -468,7 +481,10 @@ wss.on('connection', async (ws, req) => {
 // Funciones auxiliares del sistema
 function broadcastToControlPanel(message) {
     if (systemState.controlPanel && systemState.controlPanel.readyState === WebSocket.OPEN) {
+        console.log('📤 Enviando a Control Panel:', message);
         systemState.controlPanel.send(JSON.stringify(message));
+    } else {
+        console.log('⚠️ Control Panel no conectado. No se puede enviar:', message.type);
     }
 }
 
