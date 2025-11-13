@@ -364,18 +364,22 @@
             ws = new WebSocket(wsUrl);
 
             ws.onopen = () => {
-                console.log('Control Panel WebSocket conectado');
+                console.log('✅ Control Panel WebSocket conectado');
                 addLog('Panel de control conectado');
                 
+                console.log('📤 Enviando registro de control panel...');
                 ws.send(JSON.stringify({
                     type: 'register',
                     clientType: 'control_panel'
                 }));
 
-                // Solicitar estado actual
-                ws.send(JSON.stringify({
-                    type: 'request_system_state'
-                }));
+                console.log('📤 Solicitando estado del sistema...');
+                // Solicitar estado actual después de un pequeño delay
+                setTimeout(() => {
+                    ws.send(JSON.stringify({
+                        type: 'request_system_state'
+                    }));
+                }, 100);
             };
 
             ws.onmessage = (event) => {
@@ -384,15 +388,24 @@
 
                 switch(message.type) {
                     case 'system_state':
+                        console.log('📊 Actualizando estado del sistema:', message.state);
                         updateSystemState(message.state);
                         break;
                     
                     case 'player_connected':
+                        console.log(`✓ Jugador ${message.playerId} conectado en ${message.screen}`);
                         updatePlayerStatus(message.playerId, true, message.screen);
                         addLog(`Jugador ${message.playerId} conectado en ${message.screen}`);
                         break;
                     
+                    case 'player_screen_changed':
+                        console.log(`🔄 Jugador ${message.playerId} cambió a ${message.screen}`);
+                        updatePlayerStatus(message.playerId, true, message.screen);
+                        addLog(`Jugador ${message.playerId} cambió a ${message.screen}`);
+                        break;
+                    
                     case 'player_disconnected':
+                        console.log(`✗ Jugador ${message.playerId} desconectado`);
                         updatePlayerStatus(message.playerId, false);
                         addLog(`Jugador ${message.playerId} desconectado`);
                         break;
@@ -457,16 +470,25 @@
         }
 
         function updatePlayerStatus(playerId, connected, screen = 'Desconectado') {
+            console.log(`🔧 updatePlayerStatus llamado: Jugador ${playerId}, Conectado: ${connected}, Pantalla: ${screen}`);
+            
             const statusEl = document.getElementById(`player${playerId}Status`);
             const screenEl = document.getElementById(`player${playerId}Screen`);
             const indicatorEl = document.getElementById(`player${playerId}Indicator`);
 
+            if (!statusEl || !screenEl || !indicatorEl) {
+                console.error(`❌ No se encontraron elementos para jugador ${playerId}`);
+                return;
+            }
+
             if (connected) {
+                console.log(`✅ Marcando jugador ${playerId} como CONECTADO`);
                 statusEl.classList.remove('disconnected');
                 statusEl.classList.add('connected');
                 indicatorEl.classList.add('connected');
                 screenEl.textContent = screen;
             } else {
+                console.log(`❌ Marcando jugador ${playerId} como DESCONECTADO`);
                 statusEl.classList.remove('connected');
                 statusEl.classList.add('disconnected');
                 indicatorEl.classList.remove('connected');

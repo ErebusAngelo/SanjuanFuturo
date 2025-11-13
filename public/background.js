@@ -17,9 +17,8 @@ function setup() {
         p5Canvas.style.zIndex = '-1';
         p5Canvas.style.pointerEvents = 'none';
         
-        // En avatar.html empieza oculto, en otras páginas visible
-        const isAvatarPage = window.location.pathname.includes('avatar.html');
-        p5Canvas.style.display = isAvatarPage ? 'none' : 'block';
+        // SIEMPRE VISIBLE en todas las páginas
+        p5Canvas.style.display = 'block';
     }
     
     // Crear partículas

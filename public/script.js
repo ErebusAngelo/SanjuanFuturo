@@ -1,5 +1,8 @@
 // El San Juan que Quiero - Script principal
 
+let ws = null;
+let playerId = null;
+
 document.addEventListener('DOMContentLoaded', function() {
     // Ajuste de escala para diferentes dispositivos
     adjustScale();
@@ -10,7 +13,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Obtener parámetro jugador de la URL
     const urlParams = new URLSearchParams(window.location.search);
-    const jugador = urlParams.get('jugador');
+    playerId = urlParams.get('jugador');
+    
+    // Conectar WebSocket si hay jugador
+    if (playerId) {
+        console.log(`🔌 Conectando jugador ${playerId} desde index.html`);
+        connectWebSocket();
+    }
     
     // Manejar click en botón COMENZAR
     const startButton = document.getElementById('startButton');
@@ -19,14 +28,46 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Comenzando experiencia...');
             
             // Preservar parámetro jugador en la redirección
-            if (jugador) {
-                window.location.href = `pantalla2.html?jugador=${jugador}`;
+            if (playerId) {
+                window.location.href = `pantalla2.html?jugador=${playerId}`;
             } else {
                 window.location.href = 'pantalla2.html';
             }
         });
     }
 });
+
+function connectWebSocket() {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}`;
+    
+    ws = new WebSocket(wsUrl);
+    
+    ws.onopen = () => {
+        console.log(`✅ WebSocket conectado para jugador ${playerId}`);
+        
+        // Registrar como jugador en index.html
+        ws.send(JSON.stringify({
+            type: 'register',
+            clientType: 'player',
+            playerId: playerId,
+            screen: 'index'
+        }));
+    };
+    
+    ws.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        console.log('📨 Mensaje recibido en index.html:', message);
+    };
+    
+    ws.onerror = (error) => {
+        console.error('❌ Error en WebSocket:', error);
+    };
+    
+    ws.onclose = () => {
+        console.log('🔌 WebSocket desconectado');
+    };
+}
 
 function adjustScale() {
     const container = document.querySelector('.main-container');
