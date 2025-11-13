@@ -3,7 +3,9 @@ precision mediump float;
 varying vec2 vTexCoord;
 uniform vec2 u_resolution;
 uniform float u_time;
-uniform vec3 u_ripples[10]; // x, y, strength
+uniform vec3 u_ripples[3]; // x, y, tiempo de vida
+uniform float u_ripple_duration; // Duración total del ripple
+uniform float u_ripple_speed; // Velocidad de expansión
 
 // Colores celeste y blanco
 const vec3 COLOR_CYAN = vec3(0.0, 0.5, 1.0); // #00d5ff4b
@@ -57,8 +59,8 @@ void main() {
     
     // Coordenadas para FBM
     vec2 fbmCoord = st * 1.0;
-    fbmCoord.x += u_time * 0.1;
-    fbmCoord.y += u_time * 0.05;
+    fbmCoord.x += u_time * 0.15;
+    fbmCoord.y += u_time * 0.1;
     
     // Calcular FBM
     float fbmValue = fbm(fbmCoord);
@@ -72,20 +74,33 @@ void main() {
     // Calcular FBM
     float fbmValue2 = fbm(fbmCoord2);
     
-    // Agregar ondas de ripples
+    // Agregar ondas de ripples (solo 3 ahora)
     float rippleEffect = 0.0;
-    for(int i = 0; i < 10; i++) {
-        if(u_ripples[i].z > 0.0) {
-            vec2 ripplePos = vec2(u_ripples[i].x,1.-u_ripples[i].y);
+    for(int i = 0; i < 3; i++) {
+        float rippleTime = u_ripples[i].z; // Tiempo de vida del ripple
+        
+        // Solo procesar si el ripple está activo (tiempo >= 0)
+        if(rippleTime >= 0.0) {
+            vec2 ripplePos = vec2(u_ripples[i].x, 1.0 - u_ripples[i].y);
             float rippleDist = length(st - ripplePos);
-            float rippleStrength = u_ripples[i].z;
             
-            // Onda expansiva
-            float wave = sin(rippleDist * 20.0 - u_time * 5.0) * 0.5 + 0.5;
-            wave *= exp(-rippleDist * 3.0); // Decay
-            wave *= rippleStrength;
+            // Calcular strength basado en el tiempo (fade out suave)
+            float normalizedTime = rippleTime / u_ripple_duration;
+            float rippleStrength = 1.0 - normalizedTime; // Empieza en 1.0, termina en 0.0
+            rippleStrength = smoothstep(0.0, 0.1, rippleStrength) * smoothstep(1.0, 0.0, normalizedTime);
             
-            rippleEffect += wave;
+            // Onda expansiva MUY lenta
+            // La onda se expande con el tiempo usando u_ripple_speed
+            float waveRadius = rippleTime * u_ripple_speed;
+            float waveDist = abs(rippleDist - waveRadius);
+            
+            // Crear onda con decay espacial
+            float wave = exp(-waveDist * 8.0); // Onda concentrada
+            wave *= exp(-rippleDist * 0.5); // Decay general desde el centro
+            wave *= rippleStrength; // Aplicar fade out temporal
+            
+            // Agregar desplazamiento al FBM
+            rippleEffect += wave * 0.5;
         }
     }
     
@@ -97,7 +112,7 @@ void main() {
     color = mix(color, COLOR_BLUE, fbmValue2*.5);
     // Agregar brillo en el centro
     float centerGlow = 1.0 - smoothstep(0.0, 0.5, dist);
-    color += COLOR_WHITE * centerGlow * 0.3;
+   // color += COLOR_WHITE * centerGlow * 0.3;
     
     // Aplicar máscara circular
     //color *= circleMask;

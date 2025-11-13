@@ -45,7 +45,8 @@ precision mediump float;
 varying vec2 vTexCoord;
 uniform vec2 u_resolution;
 uniform float u_time;
-uniform vec3 u_ripples[10];
+uniform vec3 u_ripples[3];
+uniform float u_ripple_duration;
 
 const vec3 COLOR_CYAN = vec3(0.0, 0.831, 1.0);
 const vec3 COLOR_WHITE = vec3(1.0, 1.0, 1.0);
@@ -87,15 +88,20 @@ void main() {
     fbmCoord.y += u_time * 0.05;
     float fbmValue = fbm(fbmCoord);
     float rippleEffect = 0.0;
-    for(int i = 0; i < 10; i++) {
-        if(u_ripples[i].z > 0.0) {
-            vec2 ripplePos = u_ripples[i].xy;
+    for(int i = 0; i < 3; i++) {
+        float rippleTime = u_ripples[i].z;
+        if(rippleTime >= 0.0) {
+            vec2 ripplePos = vec2(u_ripples[i].x, 1.0 - u_ripples[i].y);
             float rippleDist = length(st - ripplePos);
-            float rippleStrength = u_ripples[i].z;
-            float wave = sin(rippleDist * 20.0 - u_time * 5.0) * 0.5 + 0.5;
-            wave *= exp(-rippleDist * 3.0);
+            float normalizedTime = rippleTime / u_ripple_duration;
+            float rippleStrength = 1.0 - normalizedTime;
+            rippleStrength = smoothstep(0.0, 0.1, rippleStrength) * smoothstep(1.0, 0.0, normalizedTime);
+            float waveRadius = rippleTime * 0.3;
+            float waveDist = abs(rippleDist - waveRadius);
+            float wave = exp(-waveDist * 8.0);
+            wave *= exp(-rippleDist * 0.5);
             wave *= rippleStrength;
-            rippleEffect += wave;
+            rippleEffect += wave * 0.5;
         }
     }
     fbmValue += rippleEffect * 0.5;
@@ -125,13 +131,18 @@ function addRipple(x, y) {
     const normalizedX = (x - rect.left) / rect.width;
     const normalizedY = (y - rect.top) / rect.height;
     
+    // Limitar a máximo 3 ripples simultáneos (no necesitamos 10)
+    if (ripples.length >= 3) {
+        ripples.shift(); // Eliminar el más antiguo
+    }
+    
     ripples.push({
         x: normalizedX,
         y: normalizedY,
-        strength: 1.0
+        time: 0.0 // Tiempo de vida del ripple (empieza en 0)
     });
     
-    console.log('🌊 Ripple agregado en:', normalizedX, normalizedY);
+    console.log('🌊 Ripple agregado en:', normalizedX.toFixed(2), normalizedY.toFixed(2), '| Total ripples:', ripples.length);
 }
 
 // Integración con p5.js - Crear instancia separada para el shader
@@ -205,17 +216,25 @@ async function initShaderInstance() {
             p.draw = function() {
                 p.shader(fbmShader);
                 
-                // Pasar uniforms
+                // Obtener configuración
+                const animSpeed = CONFIG?.shader?.animation?.speed || 0.2;
+                const rippleDuration = CONFIG?.shader?.animation?.rippleDuration || 8.0;
+                const rippleSpeed = CONFIG?.shader?.animation?.rippleSpeed || 0.3;
+                
+                // Pasar uniforms básicos
                 fbmShader.setUniform('u_resolution', [p.width, p.height]);
                 fbmShader.setUniform('u_time', time);
+                fbmShader.setUniform('u_ripple_duration', rippleDuration);
+                fbmShader.setUniform('u_ripple_speed', rippleSpeed);
                 
-                // Pasar ripples (máximo 10)
+                // Preparar datos de ripples
                 const rippleData = [];
-                for (let i = 0; i < 10; i++) {
+                for (let i = 0; i < 3; i++) {
                     if (i < ripples.length) {
-                        rippleData.push([ripples[i].x, ripples[i].y, ripples[i].strength]);
+                        // Pasar: x, y, tiempo de vida (no strength)
+                        rippleData.push([ripples[i].x, ripples[i].y, ripples[i].time]);
                     } else {
-                        rippleData.push([0, 0, 0]);
+                        rippleData.push([0, 0, -1]); // -1 indica ripple inactivo
                     }
                 }
                 fbmShader.setUniform('u_ripples', rippleData.flat());
@@ -223,14 +242,21 @@ async function initShaderInstance() {
                 // Dibujar rectángulo que cubre todo el canvas
                 p.rect(-p.width/2, -p.height/2, p.width, p.height);
                 
-                // Actualizar tiempo
-                time += 0.016 * (CONFIG?.shader?.animation?.speed || 0.5);
+                // Actualizar tiempo global
+                time += 0.016 * animSpeed;
                 
-                // Actualizar ripples (decay)
-                ripples = ripples.filter(r => {
-                    r.strength *= 0.95;
-                    return r.strength > 0.01;
+                // Actualizar ripples
+                ripples.forEach(r => {
+                    r.time += 0.016; // Incrementar tiempo de vida en segundos
                 });
+                
+                // Filtrar ripples que ya expiraron
+                ripples = ripples.filter(r => r.time < rippleDuration);
+                
+                // Debug
+                if (ripples.length > 0 && p.frameCount % 60 === 0) {
+                    console.log('🌊 Ripples activos:', ripples.length, '| Tiempos:', ripples.map(r => r.time.toFixed(2)));
+                }
             };
         });
     }, 500); // Esperar 500ms para asegurar que el DOM esté listo

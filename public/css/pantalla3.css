@@ -95,7 +95,7 @@
 /* Responsive */
 @media screen and (max-width: 1080px) {
     .page-header {
-        padding: 25% 100px 35px;
+        padding: 5% 100px 35px;
     }
     
     .header-left .text-subtitle {

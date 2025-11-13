@@ -10,8 +10,8 @@ const CONFIG = {
     
     // Avatar.html - Imagen generada (carta legendaria)
     generatedImage: {
-        maxWidth: '400px',         // Tamaño máximo de la imagen generada
-        maxHeight: '400px',
+        maxWidth: '200px',         // Tamaño máximo de la imagen generada
+        maxHeight: '200px',
         glowColor: '#00D4FF',      // Color del glow (celeste principal)
         glowIntensity: '30px',     // Intensidad del glow
         animationDuration: '1.5s'  // Duración de la animación de reveal
@@ -26,16 +26,16 @@ const CONFIG = {
     
     // Avatar.html - Galería
     gallery: {
-        gridGap: '15px',           // Separación entre imágenes
-        itemBorderRadius: '8px',   // Radio de borde de cada imagen
+        gridGap: '5px',           // Separación entre imágenes
+        itemBorderRadius: '1px',   // Radio de borde de cada imagen
         itemBorder: '2px solid #00D4FF', // Borde de cada imagen
         glowIntensity: '10px'      // Glow de las imágenes
     },
     
     // Avatar.html - Marco circular
     circleFrame: {
-        strokeWidth: 8,
-        glowIntensity: '20px'
+        strokeWidth: 5,
+        glowIntensity: '10px'
     },
     
     // Pantalla3 - Shader FBM
@@ -46,9 +46,9 @@ const CONFIG = {
             secondary: '#FFFFFF'   // Blanco
         },
         animation: {
-            speed: 0.5,            // Velocidad de animación base
-            rippleSpeed: 2.0,      // Velocidad de ondas al tirar esferitas
-            rippleDuration: 1.5    // Duración del efecto de onda (segundos)
+            speed: 0.2,            // Velocidad de animación base del FBM
+            rippleSpeed: 0.3,      // Velocidad de expansión de la onda (0.3 = lento)
+            rippleDuration: 8.0    // Duración del efecto de onda en segundos (¡AHORA SÍ FUNCIONA!)
         }
     },
     
