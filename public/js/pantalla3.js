@@ -11,27 +11,61 @@ document.addEventListener("DOMContentLoaded", () => {
     userNameElement.textContent = "Usuario"
   }
 
-  // Definición de categorías y archivos con arrays
+  // Definición de categorías y opciones con arrays
   const categoriesData = [
     {
       id: "innovacion",
-      name: "INNOVACIÓN",
-      files: ["Inteligencia Artificial", "Robótica", "Startups", "Ciencia Aplicada"],
+      name: "INNOVACIÓN Y TECNOLOGÍA",
+      options: [
+        "Inteligencia Artificial",
+        "Robótica",
+        "Transformación Digital",
+        "Ciencia Aplicada",
+        "Economía del Conocimiento",
+        "Modernización tecnológica"
+      ],
     },
     {
-      id: "tierra-viva",
-      name: "TIERRA VIVA",
-      files: ["Riego Eficiente", "Cuidado del Agua", "Agroindustria", "Sostenibilidad"],
+      id: "agricultura",
+      name: "AGRICULTURA Y GANADERÍA",
+      options: [
+        "Riego Eficiente",
+        "Buenas Prácticas Agrícolas",
+        "Sanidad Vegetal y Animal",
+        "Agroindustria (Valor Agregado)",
+        "Sostenibilidad",
+        "Producción Sustentable"
+      ],
     },
     {
-      id: "fuerza-productiva",
-      name: "FUERZA PRODUCTIVA",
-      files: ["Industria Limpia", "Exportación", "Diseño y Calidad", "Logística Moderna"],
+      id: "mineria",
+      name: "MINERÍA, INDUSTRIA Y COMERCIO",
+      options: [
+        "Industria Limpia",
+        "Parques Industriales",
+        "Comercio Local y Digital",
+        "PYMEs y Emprendedores",
+        "Diseño y Calidad",
+        "Defensa de los Derechos del Consumidor",
+        "Exportación (San Juan al Mundo)",
+        "Logística Moderna",
+        "Sostenibilidad"
+      ],
     },
     {
-      id: "oportunidades",
-      name: "OPORTUNIDADES",
-      files: ["Nuevos Empleos", "Capacitación", "Economía del Conocimiento", "Inversiones"],
+      id: "talento",
+      name: "TALENTO Y OPORTUNIDADES",
+      options: [
+        "Nuevos Empleos",
+        "Educacion y Desarrollo de Talento",
+        "Aprender Trabajar y Producir",
+        "Herramientas Financieras",
+        "Inversiones Productivas",
+        "Diversificación Productiva",
+        "Desarrollo Económico",
+        "Energías Renovables",
+        "Turismo"
+      ],
     },
   ]
 
@@ -39,47 +73,14 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentCategoryIndex = 0
   const userSelections = {}
 
-  // Generar HTML dinámicamente
-  function generateFileHTML(fileName) {
-    const words = fileName.split(" ")
-    
-    let textElements = ""
-    let fontSize = 16
-    
-    // Ajustar tamaño de fuente según longitud
-    if (fileName.length > 20) {
-      fontSize = 14
-    } else if (fileName.length > 15) {
-      fontSize = 15
-    }
-    
-    if (words.length > 1) {
-      // Texto en 2 líneas
-      const midpoint = Math.ceil(words.length / 2)
-      const line1 = words.slice(0, midpoint).join(" ")
-      const line2 = words.slice(midpoint).join(" ")
-      textElements = `
-                <text class="file-text" x="115" y="210" text-anchor="middle" fill="#00D4FF" font-family="Arkitech, sans-serif" font-size="${fontSize}">${line1}</text>
-                <text class="file-text" x="115" y="${210 + fontSize + 8}" text-anchor="middle" fill="#00D4FF" font-family="Arkitech, sans-serif" font-size="${fontSize}">${line2}</text>
-            `
-    } else {
-      // Texto en 1 línea
-      textElements = `
-                <text class="file-text" x="115" y="220" text-anchor="middle" fill="#00D4FF" font-family="Arkitech, sans-serif" font-size="${fontSize}">${fileName}</text>
-            `
-    }
-
+  // Generar HTML dinámicamente para botones con círculos
+  function generateOptionHTML(optionName) {
     return `
-            <div class="file-item" draggable="true" data-file="${fileName}">
-                <svg width="230" height="260" viewBox="0 0 230 260" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path class="file-bg" d="M10 0L200 0L220 20V260H10V0Z" stroke="#00D4FF" stroke-width="2" fill="rgba(0, 0, 0, 0.3)"/>
-                    <path class="file-corner" d="M200 0L200 20H220" stroke="#00D4FF" stroke-width="2" fill="transparent"/>
-                    <line class="file-icon" x1="115" y1="70" x2="115" y2="120" stroke="#00D4FF" stroke-width="5"/>
-                    <line class="file-icon" x1="90" y1="95" x2="140" y2="95" stroke="#00D4FF" stroke-width="5"/>
-                    ${textElements}
-                </svg>
-            </div>
-        `
+      <div class="option-item" data-option="${optionName}">
+        <div class="option-circle"></div>
+        <span class="option-text">${optionName}</span>
+      </div>
+    `
   }
 
   function renderCategory(categoryIndex, isFirstLoad = false) {
@@ -89,30 +90,37 @@ document.addEventListener("DOMContentLoaded", () => {
     // Limpiar contenedor
     filesContainer.innerHTML = ""
 
-    // Generar archivos dinámicamente
-    const filesHTML = category.files.map((file) => generateFileHTML(file)).join("")
+    // Generar opciones dinámicamente
+    const optionsHTML = category.options.map((option) => generateOptionHTML(option)).join("")
 
-    // Agregar todo al contenedor
+    // Agregar todo al contenedor (texto instructivo ANTES de las opciones)
     filesContainer.innerHTML = `
-            <div class="category-files active" data-category="${category.id}">
-                ${filesHTML}
+            <p class="drag-instruction">Arrastra 2 elementos al núcleo<br>que quieras sumar al San Juan del futuro</p>
+            <div class="category-options active" data-category="${category.id}">
+                ${optionsHTML}
             </div>
-            <p class="drag-instruction">Arrastra al núcleo del futuro lo que quieras sumar</p>
         `
 
     // Actualizar título con efecto de escritura (delay en primera carga)
     const titleDelay = isFirstLoad ? 1200 : 0
-    typeTitle(category.name, titleDelay)
+    typeTitle(category.name, titleDelay, category.id)
 
-    initializeDragAndDrop()
+    initializeOptionSelection()
   }
 
   // Efecto de escritura para el título
   let typingTimeout
-  function typeTitle(text, delay = 0) {
+  function typeTitle(text, delay = 0, categoryId = "") {
     const titleElement = document.querySelector(".opportunities-text")
     titleElement.textContent = ""
     let charIndex = 0
+
+    // Ajustar tamaño de fuente según categoría
+    if (categoryId === "mineria") {
+      titleElement.style.fontSize = "26px"
+    } else {
+      titleElement.style.fontSize = "30px"
+    }
 
     // Cancelar animación anterior si existe
     if (typingTimeout) {
@@ -137,127 +145,139 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(typeNextChar, delay)
   }
 
-  // Variables para touch
+  // Variables para drag de círculos
+  let selectedOption = null
+  let draggedCircle = null
   let touchStartX = 0
   let touchStartY = 0
-  let touchedElement = null
-  let touchGhost = null
   let isTouchDragging = false
 
-  function initializeDragAndDrop() {
-    const fileItems = document.querySelectorAll(".file-item")
-    console.log("🔧 Inicializando DRAG + TOUCH para", fileItems.length, "archivos")
+  function initializeOptionSelection() {
+    const optionItems = document.querySelectorAll(".option-item")
+    console.log("🔧 Inicializando selección para", optionItems.length, "opciones")
 
-    fileItems.forEach((file) => {
-      // DRAG NATIVO para mouse
-      file.setAttribute("draggable", "true")
-      file.style.cursor = "grab"
+    optionItems.forEach((option) => {
+      // Mousedown/Touchstart para seleccionar Y comenzar drag inmediatamente
+      option.addEventListener("mousedown", function(e) {
+        e.preventDefault()
+        
+        // Deseleccionar otras opciones
+        optionItems.forEach(opt => opt.classList.remove("selected"))
+        
+        // Seleccionar esta
+        this.classList.add("selected")
+        selectedOption = this
+        console.log("✅ Opción seleccionada:", this.getAttribute("data-option"))
+        
+        // Iniciar drag inmediatamente
+        startDragCircle(e.clientX, e.clientY, option)
+      })
 
-      file.ondragstart = function(e) {
-        console.log("🖱️ DRAG START (mouse):", this.getAttribute("data-file"))
-        e.dataTransfer.effectAllowed = "move"
-        e.dataTransfer.setData("text/plain", this.getAttribute("data-file"))
-        this.style.opacity = "0.8"
-        this.classList.add("dragging")
-      }
-
-      file.ondragend = function(e) {
-        console.log("🏁 DRAG END (mouse)")
-        this.style.opacity = "1"
-        this.classList.remove("dragging")
-      }
-
-      // TOUCH para móvil/emulación
-      file.addEventListener("touchstart", handleTouchStart, { passive: false })
-      file.addEventListener("touchmove", handleTouchMove, { passive: false })
-      file.addEventListener("touchend", handleTouchEnd, { passive: false })
+      option.addEventListener("touchstart", function(e) {
+        e.preventDefault()
+        const touch = e.touches[0]
+        
+        // Deseleccionar otras opciones
+        optionItems.forEach(opt => opt.classList.remove("selected"))
+        
+        // Seleccionar esta
+        this.classList.add("selected")
+        selectedOption = this
+        console.log("✅ Opción seleccionada:", this.getAttribute("data-option"))
+        
+        // Iniciar drag inmediatamente
+        startDragCircle(touch.clientX, touch.clientY, option)
+      }, { passive: false })
     })
+
+    // Eventos globales para drag
+    document.addEventListener("mousemove", handleDragMove)
+    document.addEventListener("mouseup", handleDragEnd)
+    document.addEventListener("touchmove", handleDragMove, { passive: false })
+    document.addEventListener("touchend", handleDragEnd)
   }
 
-  function handleTouchStart(e) {
-    e.preventDefault()
-    touchedElement = e.currentTarget
-    const touch = e.touches[0]
-    touchStartX = touch.clientX
-    touchStartY = touch.clientY
-    isTouchDragging = false
+  function startDragCircle(x, y, option) {
+    console.log("🎯 Iniciando drag del círculo")
     
-    console.log("👆 TOUCH START:", touchedElement.getAttribute("data-file"))
-    touchedElement.style.opacity = "0.8"
-    touchedElement.classList.add("dragging")
+    // Crear círculo visual para arrastrar (celeste brillante)
+    draggedCircle = document.createElement("div")
+    draggedCircle.className = "dragged-circle"
+    draggedCircle.style.transform = `translate(${x - 25}px, ${y - 25}px)`
+    document.body.appendChild(draggedCircle)
+    
+    selectedOption = option
+    isTouchDragging = true
   }
 
-  function handleTouchMove(e) {
-    if (!touchedElement) return
-    e.preventDefault()
-
-    const touch = e.touches[0]
+  function handleDragMove(e) {
+    if (!draggedCircle || !isTouchDragging) return
     
-    if (!isTouchDragging) {
-      isTouchDragging = true
-      console.log("📱 TOUCH DRAG iniciado")
-      
-      // Crear ghost (con clase dragging para estilo azul)
-      touchGhost = touchedElement.cloneNode(true)
-      touchGhost.classList.add("dragging")
-      touchGhost.style.position = "fixed"
-      touchGhost.style.pointerEvents = "none"
-      touchGhost.style.opacity = "0.8"
-      touchGhost.style.zIndex = "10000"
-      touchGhost.style.width = touchedElement.offsetWidth + "px"
-      document.body.appendChild(touchGhost)
+    if (e.type === "touchmove") {
+      e.preventDefault()
     }
-
-    // Mover ghost
-    if (touchGhost) {
-      touchGhost.style.left = (touch.clientX - touchGhost.offsetWidth / 2) + "px"
-      touchGhost.style.top = (touch.clientY - touchGhost.offsetHeight / 2) + "px"
+    
+    let x, y
+    if (e.type === "touchmove") {
+      x = e.touches[0].clientX
+      y = e.touches[0].clientY
+    } else {
+      x = e.clientX
+      y = e.clientY
     }
+    
+    // Usar transform en lugar de left/top para mejor rendimiento
+    requestAnimationFrame(() => {
+      draggedCircle.style.transform = `translate(${x - 25}px, ${y - 25}px)`
+    })
 
     // Verificar overlap con dropzone
     const dropRect = dropZone.getBoundingClientRect()
-    const isOver = touch.clientX >= dropRect.left && 
-                   touch.clientX <= dropRect.right &&
-                   touch.clientY >= dropRect.top && 
-                   touch.clientY <= dropRect.bottom
+    const isOver = x >= dropRect.left && 
+                   x <= dropRect.right &&
+                   y >= dropRect.top && 
+                   y <= dropRect.bottom
 
     if (isOver && !dropZone.classList.contains("drag-over")) {
       dropZone.classList.add("drag-over")
-      console.log("💫 Sobre la esfera (touch)")
     } else if (!isOver && dropZone.classList.contains("drag-over")) {
       dropZone.classList.remove("drag-over")
     }
   }
 
-  function handleTouchEnd(e) {
-    if (!touchedElement) return
-    e.preventDefault()
-
-    const touch = e.changedTouches[0]
+  function handleDragEnd(e) {
+    if (!draggedCircle || !isTouchDragging) return
+    
+    let x, y
+    if (e.type === "touchend") {
+      x = e.changedTouches[0].clientX
+      y = e.changedTouches[0].clientY
+    } else {
+      x = e.clientX
+      y = e.clientY
+    }
+    
     const dropRect = dropZone.getBoundingClientRect()
-    const isOver = touch.clientX >= dropRect.left && 
-                   touch.clientX <= dropRect.right &&
-                   touch.clientY >= dropRect.top && 
-                   touch.clientY <= dropRect.bottom
+    const isOver = x >= dropRect.left && 
+                   x <= dropRect.right &&
+                   y >= dropRect.top && 
+                   y <= dropRect.bottom
 
-    console.log("🏁 TOUCH END")
+    console.log("🏁 Drag end, isOver:", isOver)
 
-    if (isTouchDragging && isOver) {
-      const fileName = touchedElement.getAttribute("data-file")
-      console.log("💧 DROP (touch):", fileName)
-      handleFileDrop(fileName)
+    if (isOver && selectedOption) {
+      const optionName = selectedOption.getAttribute("data-option")
+      console.log("💧 DROP:", optionName)
+      handleOptionDrop(optionName)
     }
 
     // Limpiar
-    if (touchGhost) {
-      touchGhost.remove()
-      touchGhost = null
+    if (draggedCircle) {
+      draggedCircle.remove()
+      draggedCircle = null
     }
     
-    touchedElement.style.opacity = "1"
-    touchedElement.classList.remove("dragging")
     dropZone.classList.remove("drag-over")
-    touchedElement = null
     isTouchDragging = false
   }
 
@@ -268,31 +288,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Renderizar primera categoría con delay para el efecto de typing
   renderCategory(0, true)
 
-  // Configurar DROP ZONE
-  dropZone.ondragover = function(e) {
-    e.preventDefault()
-    e.dataTransfer.dropEffect = "move"
-    this.classList.add("drag-over")
-    return false
-  }
-
-  dropZone.ondragleave = function(e) {
-    this.classList.remove("drag-over")
-  }
-
-  dropZone.ondrop = function(e) {
-    e.preventDefault()
-    this.classList.remove("drag-over")
-    
-    const fileName = e.dataTransfer.getData("text/plain")
-    console.log("💧 DROP:", fileName)
-    
-    if (fileName) {
-      handleFileDrop(fileName)
-    }
-    
-    return false
-  }
+  // El drop zone ya está manejado por los eventos de mouse/touch globales
 
   // Configurar indicadores como clickeables
   indicators.forEach((indicator, index) => {
@@ -303,8 +299,8 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   })
 
-  // Procesar el drop de un archivo
-  function handleFileDrop(fileName) {
+  // Procesar el drop de una opción
+  function handleOptionDrop(optionName) {
     const currentCategory = categoriesData[currentCategoryIndex]
 
     // Inicializar array si no existe
@@ -313,39 +309,39 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Guardar la selección
-    if (!userSelections[currentCategory.id].includes(fileName)) {
-      userSelections[currentCategory.id].push(fileName)
-      console.log(`✨ Archivo "${fileName}" agregado a categoría "${currentCategory.name}"`)
+    if (!userSelections[currentCategory.id].includes(optionName)) {
+      userSelections[currentCategory.id].push(optionName)
+      console.log(`✨ Opción "${optionName}" agregada a categoría "${currentCategory.name}"`)
       console.log("📊 Selecciones actuales:", userSelections)
 
       // Guardar en localStorage
       localStorage.setItem("userSelections", JSON.stringify(userSelections))
 
-      // Ocultar el archivo que fue arrastrado
-      const draggedFile = document.querySelector(`[data-file="${fileName}"]`)
-      if (draggedFile) {
-        console.log("🗑️ Ocultando archivo...")
-        draggedFile.style.transition = "opacity 0.3s"
-        draggedFile.style.opacity = "0"
+      // Ocultar la opción que fue arrastrada
+      const draggedOption = document.querySelector(`[data-option="${optionName}"]`)
+      if (draggedOption) {
+        console.log("🗑️ Ocultando opción...")
+        draggedOption.style.transition = "opacity 0.3s"
+        draggedOption.style.opacity = "0"
         setTimeout(() => {
-          draggedFile.style.display = "none"
+          draggedOption.style.display = "none"
         }, 300)
       }
 
-      // Verificar si todos los archivos fueron seleccionados
+      // Verificar si se completaron las selecciones necesarias
       checkCategoryCompletion()
     } else {
-      console.log("⚠️ Archivo ya seleccionado")
+      console.log("⚠️ Opción ya seleccionada")
     }
   }
 
   // Verificar si la categoría está completa
   function checkCategoryCompletion() {
     const currentCategory = categoriesData[currentCategoryIndex]
-    const visibleFiles = document.querySelectorAll('.file-item:not([style*="display: none"])')
+    const visibleOptions = document.querySelectorAll('.option-item:not([style*="display: none"])')
 
-    // Si ya no hay archivos visibles o se han seleccionado al menos 1, avanzar
-    if (visibleFiles.length === 0 || userSelections[currentCategory.id]?.length >= 1) {
+    // Si se han seleccionado al menos 2 opciones, avanzar
+    if (userSelections[currentCategory.id]?.length >= 2) {
       // Esperar un momento antes de cambiar de categoría
       setTimeout(() => {
         nextCategory()

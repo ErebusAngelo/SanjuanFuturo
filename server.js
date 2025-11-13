@@ -506,14 +506,27 @@ async function validateModel(modelName) {
 async function generarImagen(promptText, params = {}) {
     const promptWorkflow = await readWorkflowAPI();
 
-    // Parámetros por defecto
-    const steps = params.steps || 6;
-    const width = params.width || 512;
-    const height = params.height || 512;
+    // Parámetros por defecto para Flux
+    const steps = params.steps || 20;
+    const width = params.width || 1184;
+    const height = params.height || 1184;
     const seed = params.seed || Math.floor(Math.random() * 18446744073709551614) + 1;
-    const model = params.model || 'realvisxl.safetensors';
+    const model = params.model || 'flux1-dev-fp8.safetensors';
+    const guidance = params.guidance || 3.5;
+    const loraName = params.loraName || 'Flux_SanJuanv1.safetensors';
+    const loraStrength = params.loraStrength || 1.0;
 
-    console.log(`🎨 Generando imagen con parámetros:`, { promptText, steps, width, height, seed, model });
+    console.log(`🎨 Generando imagen con Flux + LoRA:`, { 
+        promptText, 
+        steps, 
+        width, 
+        height, 
+        seed, 
+        model, 
+        guidance,
+        loraName,
+        loraStrength 
+    });
 
     // Validar si el modelo existe
     const modelValidation = await validateModel(model);
@@ -530,27 +543,51 @@ async function generarImagen(promptText, params = {}) {
 
         // Usar el primer modelo disponible como fallback
         if (modelValidation.availableModels.length > 0) {
-            promptWorkflow["4"]["inputs"]["ckpt_name"] = modelValidation.availableModels[0];
+            promptWorkflow["30"]["inputs"]["ckpt_name"] = modelValidation.availableModels[0];
             console.log(`✓ Usando modelo fallback: ${modelValidation.availableModels[0]}`);
         }
     } else {
         console.log(`✓ Modelo "${model}" encontrado`);
-        promptWorkflow["4"]["inputs"]["ckpt_name"] = model;
+        promptWorkflow["30"]["inputs"]["ckpt_name"] = model;
 
         broadcastToClients({
             type: 'generation_status',
             status: 'info',
-            message: `✓ Usando modelo: ${model}`
+            message: `✓ Usando Flux con LoRA: ${loraName}`
         });
     }
 
-    // Configurar parámetros del workflow
+    // Configurar parámetros del workflow Flux
+    // Nodo 30: CheckpointLoaderSimple (ya configurado arriba)
+    
+    // Nodo 38: LoraLoader
+    promptWorkflow["38"]["inputs"]["lora_name"] = loraName;
+    promptWorkflow["38"]["inputs"]["strength_model"] = loraStrength;
+    promptWorkflow["38"]["inputs"]["strength_clip"] = loraStrength;
+    
+    // Nodo 6: CLIP Text Encode (Positive Prompt)
     promptWorkflow["6"]["inputs"]["text"] = promptText;
-    promptWorkflow["3"]["inputs"]["seed"] = seed;
-    promptWorkflow["3"]["inputs"]["steps"] = steps;
-    promptWorkflow["5"]["inputs"]["width"] = width;
-    promptWorkflow["5"]["inputs"]["height"] = height;
-    promptWorkflow["5"]["inputs"]["batch_size"] = 1;
+    
+    // Nodo 33: CLIP Text Encode (Negative Prompt) - vacío para Flux
+    promptWorkflow["33"]["inputs"]["text"] = "";
+    
+    // Nodo 35: FluxGuidance
+    promptWorkflow["35"]["inputs"]["guidance"] = guidance;
+    
+    // Nodo 27: EmptySD3LatentImage
+    promptWorkflow["27"]["inputs"]["width"] = width;
+    promptWorkflow["27"]["inputs"]["height"] = height;
+    promptWorkflow["27"]["inputs"]["batch_size"] = 1;
+    
+    // Nodo 31: KSampler
+    promptWorkflow["31"]["inputs"]["seed"] = seed;
+    promptWorkflow["31"]["inputs"]["steps"] = steps;
+    promptWorkflow["31"]["inputs"]["cfg"] = 1; // Flux usa CFG=1
+    promptWorkflow["31"]["inputs"]["sampler_name"] = "euler";
+    promptWorkflow["31"]["inputs"]["scheduler"] = "simple";
+    promptWorkflow["31"]["inputs"]["denoise"] = 1;
+    
+    // Nodo 9: SaveImage
     promptWorkflow["9"]["inputs"]["filename_prefix"] = "ComfyUI";
 
     const promptId = await queuePrompt(promptWorkflow);
