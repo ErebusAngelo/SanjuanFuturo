@@ -816,3 +816,38 @@
         font-size: 18px;
     }
 }
+
+/* Loading dots animation */
+.loading-dots {
+    display: inline-flex;
+    gap: 10px;
+}
+
+.loading-dots span {
+    font-size: 2rem;
+    color: #00D4FF;
+    animation: loadingDot 1.4s infinite;
+}
+
+.loading-dots span:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.loading-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.loading-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes loadingDot {
+    0%, 60%, 100% {
+        opacity: 0.3;
+        transform: scale(0.8);
+    }
+    30% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}

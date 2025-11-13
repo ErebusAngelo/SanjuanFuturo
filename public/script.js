@@ -8,11 +8,24 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('resize', adjustScale);
     window.addEventListener('orientationchange', adjustScale);
     
-    // Redirección automática a pantalla2 después de 5 segundos
-    setTimeout(function() {
-        console.log('⏱️ Redirigiendo a pantalla2...');
-        window.location.href = 'pantalla2.html';
-    }, 5000);
+    // Obtener parámetro jugador de la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const jugador = urlParams.get('jugador');
+    
+    // Manejar click en botón COMENZAR
+    const startButton = document.getElementById('startButton');
+    if (startButton) {
+        startButton.addEventListener('click', function() {
+            console.log('🚀 Comenzando experiencia...');
+            
+            // Preservar parámetro jugador en la redirección
+            if (jugador) {
+                window.location.href = `pantalla2.html?jugador=${jugador}`;
+            } else {
+                window.location.href = 'pantalla2.html';
+            }
+        });
+    }
 });
 
 function adjustScale() {

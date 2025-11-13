@@ -192,6 +192,66 @@ body {
     animation-delay: 2.3s, 2.3s;
 }
 
+/* Botón Comenzar */
+.start-button {
+    margin-top: 60px;
+    padding: 20px 60px;
+    font-family: 'Arkitech', sans-serif;
+    font-size: 32px;
+    font-weight: 500;
+    color: #000;
+    background: var(--primary-color);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 
+        0 0 20px rgba(0, 212, 255, 0.6),
+        0 0 40px rgba(0, 212, 255, 0.4),
+        0 0 60px rgba(0, 212, 255, 0.2);
+    animation: buttonPulse 2s ease-in-out infinite;
+    opacity: 0;
+    animation: fadeInButton 1s ease-out 2.5s forwards, buttonPulse 2s ease-in-out 3.5s infinite;
+}
+
+.start-button:hover {
+    transform: scale(1.05);
+    box-shadow: 
+        0 0 30px rgba(0, 212, 255, 0.8),
+        0 0 60px rgba(0, 212, 255, 0.6),
+        0 0 90px rgba(0, 212, 255, 0.4);
+}
+
+.start-button:active {
+    transform: scale(0.98);
+}
+
+@keyframes fadeInButton {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes buttonPulse {
+    0%, 100% {
+        box-shadow: 
+            0 0 20px rgba(0, 212, 255, 0.6),
+            0 0 40px rgba(0, 212, 255, 0.4),
+            0 0 60px rgba(0, 212, 255, 0.2);
+    }
+    50% {
+        box-shadow: 
+            0 0 30px rgba(0, 212, 255, 0.8),
+            0 0 60px rgba(0, 212, 255, 0.6),
+            0 0 90px rgba(0, 212, 255, 0.4);
+    }
+}
+
 /* Responsive para pantallas más pequeñas */
 @media screen and (max-width: 1080px) {
     .main-container {

@@ -1,6 +1,74 @@
 // Pantalla 3 - Oportunidades con Drag & Drop
 
+// WebSocket y sistema de jugadores
+let ws = null;
+let playerId = null;
+let numPlayers = 3; // Por defecto
+
+// Obtener ID del jugador de la URL
+function getPlayerId() {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get('jugador') || '1';
+}
+
+// Conectar al WebSocket
+function connectWebSocket() {
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const wsUrl = `${protocol}//${window.location.host}`;
+  
+  ws = new WebSocket(wsUrl);
+
+  ws.onopen = () => {
+    console.log('Jugador WebSocket conectado (pantalla3)');
+    
+    // Registrar como jugador en pantalla3
+    ws.send(JSON.stringify({
+      type: 'register',
+      clientType: 'player',
+      playerId: playerId,
+      screen: 'pantalla3'
+    }));
+    
+    // Notificar cambio de pantalla
+    ws.send(JSON.stringify({
+      type: 'player_screen_change',
+      screen: 'pantalla3'
+    }));
+  };
+
+  ws.onmessage = (event) => {
+    const message = JSON.parse(event.data);
+    console.log('Jugador recibió:', message);
+
+    if (message.type === 'system_reset') {
+      // Reiniciar la pantalla
+      localStorage.removeItem('userName');
+      window.location.href = `pantalla2.html?jugador=${playerId}`;
+    } else if (message.type === 'system_config') {
+      // Guardar configuración del sistema
+      numPlayers = message.numPlayers;
+      console.log(`Sistema configurado para ${numPlayers} jugador(es)`);
+    }
+  };
+
+  ws.onerror = (error) => {
+    console.error('Jugador WebSocket error:', error);
+  };
+
+  ws.onclose = () => {
+    console.log('Jugador WebSocket desconectado');
+    setTimeout(connectWebSocket, 3000);
+  };
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  // Obtener ID del jugador
+  playerId = getPlayerId();
+  console.log('Jugador ID:', playerId);
+  
+  // Conectar al WebSocket
+  connectWebSocket();
+  
   // Recuperar el nombre del usuario del localStorage
   const userName = localStorage.getItem("userName")
   const userNameElement = document.getElementById("userName")
@@ -358,6 +426,52 @@ document.addEventListener("DOMContentLoaded", () => {
       // Todas las categorías completadas
       console.log("Todas las categorías completadas!")
       console.log("Selecciones finales:", userSelections)
+      
+      // Generar prompt a partir de las selecciones
+      const promptParts = [];
+      for (const categoryId in userSelections) {
+        const category = categoriesData.find(c => c.id === categoryId);
+        if (category && userSelections[categoryId].length > 0) {
+          promptParts.push(`${category.name}: ${userSelections[categoryId].join(', ')}`);
+        }
+      }
+      
+      const finalPrompt = `San Juan del futuro con: ${promptParts.join('. ')}`;
+      console.log("Prompt generado:", finalPrompt);
+      
+      // Enviar prompt al servidor
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'player_prompt',
+          prompt: finalPrompt
+        }));
+        
+        console.log("Prompt enviado al servidor.");
+        
+        // Determinar mensaje según número de jugadores
+        let waitMessage = '';
+        if (numPlayers === 1) {
+          waitMessage = 'Generando tu imagen...';
+        } else {
+          waitMessage = 'Esperando a los demás jugadores...';
+        }
+        
+        // Mostrar mensaje de espera
+        const filesContainer = document.getElementById("filesContainer");
+        filesContainer.innerHTML = `
+          <div style="text-align: center; padding: 50px; color: #00D4FF;">
+            <h2 style="font-size: 2rem; margin-bottom: 20px;">¡Gracias por tu participación!</h2>
+            <p style="font-size: 1.5rem; opacity: 0.8;">${waitMessage}</p>
+            <div style="margin-top: 30px;">
+              <div class="loading-dots">
+                <span>●</span>
+                <span>●</span>
+                <span>●</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }
     }
   }
 

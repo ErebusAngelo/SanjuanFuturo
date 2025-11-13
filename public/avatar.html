@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pantalla LED - Avatar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* Canvas de fondo para background.js */
+        #backgroundCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            display: none;
+        }
+
+        #backgroundCanvas.active {
+            display: block;
+        }
+
+        .led-screen {
+            width: 1080px;
+            height: 1080px;
+            max-width: 100vw;
+            max-height: 100vh;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Estado: Video Loop */
+        .video-container {
+            width: 100%;
+            height: 100%;
+            display: none;
+            position: relative;
+        }
+
+        .video-container.active {
+            display: block;
+        }
+
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Estado: Bienvenida */
+        .welcome-screen {
+            display: none;
+            text-align: center;
+            color: #00D4FF;
+        }
+
+        .welcome-screen.active {
+            display: block;
+        }
+
+        .welcome-screen h1 {
+            font-size: 8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        /* Estado: Cargando */
+        .loading-screen {
+            display: none;
+            text-align: center;
+            color: #00D4FF;
+        }
+
+        .loading-screen.active {
+            display: block;
+        }
+
+        .loading-screen h2 {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .progress-ring {
+            width: 300px;
+            height: 300px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .progress-ring svg {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring circle {
+            fill: none;
+            stroke: #00D4FF;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.5s;
+        }
+
+        .progress-ring .background {
+            stroke: rgba(0, 212, 255, 0.2);
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            color: #00D4FF;
+        }
+
+        /* Estado: Imagen Generada */
+        .image-screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        .image-screen.active {
+            display: block;
+        }
+
+        .image-screen img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            animation: fadeIn 1s ease-in;
+        }
+
+        /* Estado: Agradecimiento */
+        .thanks-screen {
+            display: none;
+            text-align: center;
+            color: #00D4FF;
+        }
+
+        .thanks-screen.active {
+            display: block;
+        }
+
+        .thanks-screen h1 {
+            font-size: 6rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            animation: scaleIn 1s ease-out;
+        }
+
+        .thanks-screen p {
+            font-size: 3rem;
+            opacity: 0.8;
+        }
+
+        /* Animaciones */
+        @keyframes glow {
+            0%, 100% {
+                text-shadow: 0 0 20px #00D4FF, 0 0 40px #00D4FF, 0 0 60px #00D4FF;
+            }
+            50% {
+                text-shadow: 0 0 40px #00D4FF, 0 0 80px #00D4FF, 0 0 120px #00D4FF;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Indicador de conexión */
+        .connection-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ff0000;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .connection-indicator.connected {
+            background: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        .audio-prompt {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 212, 255, 0.9);
+            color: #000;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-family: 'Arkitech', sans-serif;
+            font-size: 1.2rem;
+            font-weight: bold;
+            z-index: 1000;
+            animation: pulse 2s infinite;
+            cursor: pointer;
+            display: none;
+        }
+
+        .audio-prompt.show {
+            display: block;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+        }
+
+        /* Responsive: mantener aspecto cuadrado */
+        @media (max-width: 1080px) {
+            .led-screen {
+                width: 100vw;
+                height: 100vw;
+            }
+        }
+
+        @media (max-height: 1080px) and (min-aspect-ratio: 1/1) {
+            .led-screen {
+                width: 100vh;
+                height: 100vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Canvas de fondo para background.js -->
+    <canvas id="backgroundCanvas"></canvas>
+    
+    <div class="connection-indicator" id="connectionIndicator"></div>
+    <div class="audio-prompt" id="audioPrompt">🔊 Toca para activar el audio</div>
+    
+    <div class="led-screen">
+        <!-- Estado 1: Video Loop (inicial) -->
+        <div class="video-container active" id="videoContainer">
+            <video id="loopVideo" autoplay loop muted playsinline>
+                <source src="video/loop.mp4" type="video/mp4">
+            </video>
+        </div>
+
+        <!-- Estado 2: Bienvenida -->
+        <div class="welcome-screen" id="welcomeScreen">
+            <h1>BIENVENIDO</h1>
+        </div>
+
+        <!-- Estado 3: Generando -->
+        <div class="loading-screen" id="loadingScreen">
+            <h2>GENERANDO TU FUTURO...</h2>
+            <div class="progress-ring">
+                <svg width="300" height="300">
+                    <circle class="background" cx="150" cy="150" r="140"></circle>
+                    <circle class="progress" cx="150" cy="150" r="140" 
+                            stroke-dasharray="880" 
+                            stroke-dashoffset="880"
+                            id="progressCircle"></circle>
+                </svg>
+                <div class="progress-text" id="progressText">0%</div>
+            </div>
+        </div>
+
+        <!-- Estado 4: Imagen Generada -->
+        <div class="image-screen" id="imageScreen">
+            <img id="generatedImage" src="" alt="Imagen generada">
+        </div>
+
+        <!-- Estado 5: Agradecimiento -->
+        <div class="thanks-screen" id="thanksScreen">
+            <h1>¡GRACIAS POR PARTICIPAR!</h1>
+            <p>El San Juan que queremos</p>
+        </div>
+    </div>
+
+    <script src="background.js"></script>
+    <script>
+        let ws = null;
+        let currentState = 'loop'; // loop, welcome, loading, image, thanks
+
+        // Conectar al WebSocket
+        function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}`;
+            
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                console.log('Avatar WebSocket conectado');
+                updateConnectionIndicator(true);
+                
+                // Registrar como pantalla avatar
+                ws.send(JSON.stringify({
+                    type: 'register',
+                    clientType: 'avatar'
+                }));
+            };
+
+            ws.onmessage = (event) => {
+                const message = JSON.parse(event.data);
+                console.log('Avatar recibió:', message);
+
+                switch(message.type) {
+                    case 'change_state':
+                        changeState(message.state, message.data);
+                        break;
+                    
+                    case 'generation_progress':
+                        updateProgress(message.percent);
+                        break;
+                    
+                    case 'image_generated':
+                        showGeneratedImage(message.url);
+                        break;
+                }
+            };
+
+            ws.onerror = (error) => {
+                console.error('Avatar WebSocket error:', error);
+                updateConnectionIndicator(false);
+            };
+
+            ws.onclose = () => {
+                console.log('Avatar WebSocket desconectado');
+                updateConnectionIndicator(false);
+                setTimeout(connectWebSocket, 3000);
+            };
+        }
+
+        function updateConnectionIndicator(connected) {
+            const indicator = document.getElementById('connectionIndicator');
+            if (connected) {
+                indicator.classList.add('connected');
+            } else {
+                indicator.classList.remove('connected');
+            }
+        }
+
+        function changeState(newState, data = {}) {
+            console.log(`Cambiando estado de ${currentState} a ${newState}`);
+            
+            // Ocultar todas las pantallas
+            document.querySelectorAll('.video-container, .welcome-screen, .loading-screen, .image-screen, .thanks-screen')
+                .forEach(el => el.classList.remove('active'));
+            
+            // Controlar canvas de fondo
+            const canvas = document.getElementById('backgroundCanvas');
+            
+            currentState = newState;
+
+            switch(newState) {
+                case 'loop':
+                    document.getElementById('videoContainer').classList.add('active');
+                    document.getElementById('loopVideo').play();
+                    canvas.classList.remove('active');
+                    break;
+                
+                case 'welcome':
+                    document.getElementById('welcomeScreen').classList.add('active');
+                    canvas.classList.remove('active');
+                    break;
+                
+                case 'loading':
+                    document.getElementById('loadingScreen').classList.add('active');
+                    updateProgress(0);
+                    canvas.classList.add('active'); // Mostrar background en loading
+                    break;
+                
+                case 'image':
+                    document.getElementById('imageScreen').classList.add('active');
+                    canvas.classList.remove('active');
+                    break;
+                
+                case 'thanks':
+                    document.getElementById('thanksScreen').classList.add('active');
+                    canvas.classList.remove('active');
+                    // Volver al loop después de 5 segundos
+                    setTimeout(() => {
+                        changeState('loop');
+                    }, 5000);
+                    break;
+            }
+        }
+
+        function updateProgress(percent) {
+            const circle = document.getElementById('progressCircle');
+            const text = document.getElementById('progressText');
+            const circumference = 880;
+            const offset = circumference - (percent / 100) * circumference;
+            
+            circle.style.strokeDashoffset = offset;
+            text.textContent = Math.round(percent) + '%';
+        }
+
+        function showGeneratedImage(imageUrl) {
+            const img = document.getElementById('generatedImage');
+            img.src = imageUrl;
+            changeState('image');
+            
+            // Mostrar agradecimiento después de 10 segundos
+            setTimeout(() => {
+                changeState('thanks');
+            }, 10000);
+        }
+
+        // Habilitar audio del video
+        function enableVideoAudio() {
+            const video = document.getElementById('loopVideo');
+            const audioPrompt = document.getElementById('audioPrompt');
+            
+            if (video) {
+                video.muted = false;
+                video.play().then(() => {
+                    console.log('Audio habilitado');
+                    if (audioPrompt) {
+                        audioPrompt.classList.remove('show');
+                    }
+                }).catch(err => {
+                    console.log('Autoplay con audio bloqueado:', err);
+                    // Mostrar indicador para que el usuario active el audio
+                    if (audioPrompt) {
+                        audioPrompt.classList.add('show');
+                    }
+                });
+            }
+        }
+
+        // Iniciar conexión al cargar
+        window.addEventListener('load', () => {
+            connectWebSocket();
+            
+            // Intentar habilitar audio automáticamente
+            setTimeout(() => {
+                enableVideoAudio();
+            }, 500);
+            
+            // Habilitar audio al primer click/touch en la página
+            const enableAudioOnInteraction = () => {
+                enableVideoAudio();
+                document.removeEventListener('click', enableAudioOnInteraction);
+                document.removeEventListener('touchstart', enableAudioOnInteraction);
+            };
+            
+            document.addEventListener('click', enableAudioOnInteraction);
+            document.addEventListener('touchstart', enableAudioOnInteraction);
+        });
+    </script>
+</body>
+</html>

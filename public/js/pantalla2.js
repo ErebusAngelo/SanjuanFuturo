@@ -10,10 +10,67 @@ let inputElement;
 let currentCharIndex = 0;
 let isTyping = false;
 
+// WebSocket y sistema de jugadores
+let ws = null;
+let playerId = null;
+
+// Obtener ID del jugador de la URL
+function getPlayerId() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('jugador') || '1';
+}
+
+// Conectar al WebSocket
+function connectWebSocket() {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}`;
+    
+    ws = new WebSocket(wsUrl);
+
+    ws.onopen = () => {
+        console.log('Jugador WebSocket conectado');
+        
+        // Registrar como jugador
+        ws.send(JSON.stringify({
+            type: 'register',
+            clientType: 'player',
+            playerId: playerId,
+            screen: 'pantalla2'
+        }));
+    };
+
+    ws.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        console.log('Jugador recibió:', message);
+
+        if (message.type === 'system_reset') {
+            // Reiniciar la pantalla
+            localStorage.removeItem('userName');
+            window.location.reload();
+        }
+    };
+
+    ws.onerror = (error) => {
+        console.error('Jugador WebSocket error:', error);
+    };
+
+    ws.onclose = () => {
+        console.log('Jugador WebSocket desconectado');
+        setTimeout(connectWebSocket, 3000);
+    };
+}
+
 // Esperar a que el DOM esté cargado
 document.addEventListener('DOMContentLoaded', function() {
     typingElement = document.querySelector('.typing-text');
     inputElement = document.querySelector('.name-input');
+    
+    // Obtener ID del jugador
+    playerId = getPlayerId();
+    console.log('Jugador ID:', playerId);
+    
+    // Conectar al WebSocket
+    connectWebSocket();
     
     // Iniciar el tipeo después de las animaciones de los corchetes y degradado
     setTimeout(startTyping, 1500);
@@ -174,8 +231,16 @@ if (submitButton) {
             // Guardar el nombre en localStorage
             localStorage.setItem('userName', userName);
             
-            // Redirigir a pantalla3
-            window.location.href = 'pantalla3.html';
+            // Enviar nombre al servidor
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'player_name',
+                    userName: userName
+                }));
+            }
+            
+            // Redirigir a pantalla3 con el ID del jugador
+            window.location.href = `pantalla3.html?jugador=${playerId}`;
         } else {
             // Opcional: mostrar un mensaje de error o advertencia
             console.log('Por favor ingresa tu nombre');
