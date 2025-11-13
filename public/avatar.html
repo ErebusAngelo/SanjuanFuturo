@@ -58,13 +58,94 @@
         }
 
         .video-container.active {
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .video-container video {
+        .video-circle-frame {
+            position: absolute;
+            width: 700px;
+            height: 700px;
+            padding: 20px;
+        }
+
+        .video-rotating-arc {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            animation: rotateClockwise 8s linear infinite;
+        }
+
+        .video-content-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85%;
+            height: 85%;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .video-content-circle video {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        /* Círculos giratorios con glow */
+        .circle-container {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            padding: 20px;
+            display: none;
+        }
+
+        .circle-container.active {
+            display: block;
+        }
+
+        .rotating-circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 4px solid #00D4FF;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.8),
+                        0 0 60px rgba(0, 212, 255, 0.6),
+                        inset 0 0 30px rgba(0, 212, 255, 0.4);
+        }
+
+        .circle-outer {
+            animation: rotateClockwise 4s linear infinite;
+        }
+
+        .circle-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            height: 70%;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #000;
+        }
+
+        @keyframes rotateClockwise {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes rotateCounterClockwise {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
         }
 
         /* Estado: Bienvenida */
@@ -75,11 +156,13 @@
         }
 
         .welcome-screen.active {
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .welcome-screen h1 {
-            font-size: 8rem;
+            font-size: 4rem;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 0.2em;
@@ -94,62 +177,54 @@
         }
 
         .loading-screen.active {
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .loading-screen h2 {
-            font-size: 4rem;
-            margin-bottom: 2rem;
+            font-size: 2.5rem;
             animation: pulse 1.5s ease-in-out infinite;
         }
 
-        .progress-ring {
-            width: 300px;
-            height: 300px;
-            margin: 0 auto;
-            position: relative;
+        /* Barra de progreso circular */
+        .progress-arc {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
         }
 
-        .progress-ring svg {
-            transform: rotate(-90deg);
-        }
-
-        .progress-ring circle {
+        .progress-arc circle {
             fill: none;
             stroke: #00D4FF;
-            stroke-width: 8;
+            stroke-width: 4;
             stroke-linecap: round;
-            transition: stroke-dashoffset 0.5s;
-        }
-
-        .progress-ring .background {
-            stroke: rgba(0, 212, 255, 0.2);
-        }
-
-        .progress-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 3rem;
-            color: #00D4FF;
+            transform-origin: center;
+            transform: rotate(-90deg);
+            transition: stroke-dashoffset 0.3s ease;
+            filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.8));
         }
 
         /* Estado: Imagen Generada */
         .image-screen {
             display: none;
-            width: 100%;
-            height: 100%;
         }
 
         .image-screen.active {
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .image-screen img {
-            width: 100%;
-            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
             object-fit: contain;
+            border-radius: 50%;
             animation: fadeIn 1s ease-in;
         }
 
@@ -167,16 +242,78 @@
         .thanks-screen h1 {
             font-size: 6rem;
             font-weight: bold;
-            margin-bottom: 2rem;
-            animation: scaleIn 1s ease-out;
+            animation: glow 2s ease-in-out infinite;
         }
 
         .thanks-screen p {
-            font-size: 3rem;
-            opacity: 0.8;
+            font-size: 2rem;
+            margin-top: 2rem;
         }
 
-        /* Animaciones */
+        /* Galería de imágenes */
+        .gallery-screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+            padding: 40px;
+            overflow: hidden;
+        }
+
+        .gallery-screen.active {
+            display: block;
+        }
+
+        .gallery-title {
+            text-align: center;
+            color: #00D4FF;
+            font-size: 3rem;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.8);
+        }
+
+        .gallery-grid {
+            width: 100%;
+            max-width: 900px;
+            height: calc(100% - 120px);
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gallery-scroll {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+            gap: 20px;
+            width: 100%;
+            animation: scrollGallery 15s linear infinite;
+        }
+
+        @keyframes scrollGallery {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(-50%);
+            }
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 3px solid #00D4FF;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
+            transition: all 0.3s ease;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
         @keyframes glow {
             0%, 100% {
                 text-shadow: 0 0 20px #00D4FF, 0 0 40px #00D4FF, 0 0 60px #00D4FF;
@@ -286,9 +423,43 @@
     <div class="led-screen">
         <!-- Estado 1: Video Loop (inicial) -->
         <div class="video-container active" id="videoContainer">
-            <video id="loopVideo" autoplay loop muted playsinline>
-                <source src="video/loop.mp4" type="video/mp4">
-            </video>
+            <div class="video-circle-frame">
+                <svg class="video-rotating-arc" viewBox="0 0 200 200">
+                    <path d="M 100,5 A 95,95 0 0,1 195,100" 
+                          fill="none" 
+                          stroke="#00D4FF" 
+                          stroke-width="4"
+                          stroke-linecap="round"
+                          style="filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.8)) drop-shadow(0 0 20px rgba(0, 212, 255, 0.6));" />
+                </svg>
+                <div class="video-content-circle">
+                    <video id="loopVideo" autoplay loop muted playsinline>
+                        <source src="video/loop.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+        </div>
+
+        <!-- Círculos giratorios para estados con contenido -->
+        <div class="circle-container" id="circleContainer">
+            <svg class="rotating-circle circle-outer" viewBox="0 0 200 200">
+                <path d="M 100,5 A 95,95 0 0,1 195,100" 
+                      fill="none" 
+                      stroke="#00D4FF" 
+                      stroke-width="3"
+                      stroke-linecap="round"
+                      style="filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.8)) drop-shadow(0 0 16px rgba(0, 212, 255, 0.6));" />
+            </svg>
+            <!-- Barra de progreso (solo visible en loading) -->
+            <svg class="progress-arc" id="progressArc" viewBox="0 0 200 200" style="display: none;">
+                <circle cx="100" cy="100" r="90" 
+                        stroke-dasharray="565.48" 
+                        stroke-dashoffset="565.48"
+                        id="progressCircle" />
+            </svg>
+            <div class="circle-content" id="circleContent">
+                <!-- Contenido dinámico aquí -->
+            </div>
         </div>
 
         <!-- Estado 2: Bienvenida -->
@@ -298,17 +469,7 @@
 
         <!-- Estado 3: Generando -->
         <div class="loading-screen" id="loadingScreen">
-            <h2>GENERANDO TU FUTURO...</h2>
-            <div class="progress-ring">
-                <svg width="300" height="300">
-                    <circle class="background" cx="150" cy="150" r="140"></circle>
-                    <circle class="progress" cx="150" cy="150" r="140" 
-                            stroke-dasharray="880" 
-                            stroke-dashoffset="880"
-                            id="progressCircle"></circle>
-                </svg>
-                <div class="progress-text" id="progressText">0%</div>
-            </div>
+            <h2>GENERANDO IMAGEN</h2>
         </div>
 
         <!-- Estado 4: Imagen Generada -->
@@ -321,12 +482,21 @@
             <h1>¡GRACIAS POR PARTICIPAR!</h1>
             <p>El San Juan que queremos</p>
         </div>
+
+        <!-- Estado 6: Galería -->
+        <div class="gallery-screen" id="galleryScreen">
+            <h2 class="gallery-title">GALERÍA DE IMÁGENES</h2>
+            <div class="gallery-grid" id="galleryGrid">
+                <!-- Imágenes se cargan dinámicamente -->
+            </div>
+        </div>
     </div>
 
     <script src="background.js"></script>
     <script>
         let ws = null;
-        let currentState = 'loop'; // loop, welcome, loading, image, thanks
+        let currentState = 'loop'; // loop, welcome, loading, image, thanks, gallery
+        let galleryImages = [];
 
         // Conectar al WebSocket
         function connectWebSocket() {
@@ -390,11 +560,13 @@
             console.log(`Cambiando estado de ${currentState} a ${newState}`);
             
             // Ocultar todas las pantallas
-            document.querySelectorAll('.video-container, .welcome-screen, .loading-screen, .image-screen, .thanks-screen')
+            document.querySelectorAll('.video-container, .circle-container, .welcome-screen, .loading-screen, .image-screen, .thanks-screen, .gallery-screen')
                 .forEach(el => el.classList.remove('active'));
             
             // Controlar canvas de fondo
             const canvas = document.getElementById('backgroundCanvas');
+            const circleContainer = document.getElementById('circleContainer');
+            const circleContent = document.getElementById('circleContent');
             
             currentState = newState;
 
@@ -406,24 +578,43 @@
                     break;
                 
                 case 'welcome':
-                    document.getElementById('welcomeScreen').classList.add('active');
+                    circleContainer.classList.add('active');
+                    circleContent.innerHTML = '<h1 style="font-size: 3rem; color: #00D4FF; text-align: center;">BIENVENIDO</h1>';
                     canvas.classList.remove('active');
                     break;
                 
                 case 'loading':
-                    document.getElementById('loadingScreen').classList.add('active');
+                    circleContainer.classList.add('active');
+                    circleContent.innerHTML = '<h2 style="font-size: 2rem; color: #00D4FF; text-align: center;">GENERANDO<br>IMAGEN</h2>';
+                    document.getElementById('progressArc').style.display = 'block';
                     updateProgress(0);
                     canvas.classList.add('active'); // Mostrar background en loading
                     break;
                 
                 case 'image':
-                    document.getElementById('imageScreen').classList.add('active');
+                    circleContainer.classList.add('active');
+                    document.getElementById('progressArc').style.display = 'none';
+                    const img = document.getElementById('generatedImage');
+                    circleContent.innerHTML = '';
+                    circleContent.appendChild(img);
                     canvas.classList.remove('active');
                     break;
                 
                 case 'thanks':
-                    document.getElementById('thanksScreen').classList.add('active');
+                    circleContainer.classList.add('active');
+                    document.getElementById('progressArc').style.display = 'none';
+                    circleContent.innerHTML = '<div style="text-align: center; color: #00D4FF;"><h1 style="font-size: 2.5rem; margin-bottom: 1rem;">¡GRACIAS POR PARTICIPAR!</h1><p style="font-size: 1.5rem;">El San Juan que queremos</p></div>';
                     canvas.classList.remove('active');
+                    // Mostrar galería después de 5 segundos
+                    setTimeout(() => {
+                        changeState('gallery');
+                    }, 5000);
+                    break;
+                
+                case 'gallery':
+                    document.getElementById('galleryScreen').classList.add('active');
+                    canvas.classList.remove('active');
+                    renderGallery();
                     // Volver al loop después de 5 segundos
                     setTimeout(() => {
                         changeState('loop');
@@ -434,23 +625,88 @@
 
         function updateProgress(percent) {
             const circle = document.getElementById('progressCircle');
-            const text = document.getElementById('progressText');
-            const circumference = 880;
-            const offset = circumference - (percent / 100) * circumference;
-            
-            circle.style.strokeDashoffset = offset;
-            text.textContent = Math.round(percent) + '%';
+            if (circle) {
+                const circumference = 565.48;
+                const offset = circumference - (percent / 100) * circumference;
+                circle.style.strokeDashoffset = offset;
+            }
         }
 
         function showGeneratedImage(imageUrl) {
             const img = document.getElementById('generatedImage');
             img.src = imageUrl;
+            
+            // Agregar a la galería
+            if (!galleryImages.includes(imageUrl)) {
+                galleryImages.push(imageUrl);
+            }
+            
             changeState('image');
             
             // Mostrar agradecimiento después de 10 segundos
             setTimeout(() => {
                 changeState('thanks');
             }, 10000);
+        }
+
+        // Cargar imágenes existentes de la carpeta
+        async function loadExistingImages() {
+            try {
+                const response = await fetch('/api/gallery-images');
+                const images = await response.json();
+                galleryImages = images.map(img => `/imagenes/${img}`);
+                console.log(`Cargadas ${galleryImages.length} imágenes de la galería`);
+            } catch (error) {
+                console.error('Error cargando imágenes:', error);
+            }
+        }
+
+        // Renderizar galería
+        function renderGallery() {
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = '';
+            
+            // Si hay menos de 9 imágenes, duplicar para llenar el grid
+            let imagesToShow = [...galleryImages];
+            while (imagesToShow.length < 9) {
+                imagesToShow = [...imagesToShow, ...galleryImages];
+            }
+            
+            // Si hay más de 18 imágenes, crear dos grids para scroll infinito
+            if (imagesToShow.length > 9) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'gallery-scroll';
+                
+                // Crear dos copias del grid para scroll infinito
+                for (let copy = 0; copy < 2; copy++) {
+                    for (let i = 0; i < Math.min(9, imagesToShow.length); i++) {
+                        const item = document.createElement('div');
+                        item.className = 'gallery-item';
+                        
+                        const img = document.createElement('img');
+                        img.src = imagesToShow[i];
+                        img.alt = `Imagen ${i + 1}`;
+                        
+                        item.appendChild(img);
+                        wrapper.appendChild(item);
+                    }
+                }
+                
+                grid.appendChild(wrapper);
+            } else {
+                // Mostrar solo 9 imágenes sin scroll
+                for (let i = 0; i < 9; i++) {
+                    const item = document.createElement('div');
+                    item.className = 'gallery-item';
+                    
+                    const img = document.createElement('img');
+                    img.src = imagesToShow[i % imagesToShow.length];
+                    img.alt = `Imagen ${i + 1}`;
+                    
+                    item.appendChild(img);
+                    grid.appendChild(item);
+                }
+            }
         }
 
         // Habilitar audio del video
@@ -478,6 +734,7 @@
         // Iniciar conexión al cargar
         window.addEventListener('load', () => {
             connectWebSocket();
+            loadExistingImages();
             
             // Intentar habilitar audio automáticamente
             setTimeout(() => {

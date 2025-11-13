@@ -619,6 +619,7 @@
     width: 45px;
     height: 45px;
     min-width: 45px;
+    flex-shrink: 0;
     border-radius: 50%;
     border: 3px solid var(--primary-color);
     background: var(--primary-color);

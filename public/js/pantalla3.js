@@ -48,6 +48,10 @@ function connectWebSocket() {
       // Guardar configuración del sistema
       numPlayers = message.numPlayers;
       console.log(`Sistema configurado para ${numPlayers} jugador(es)`);
+    } else if (message.type === 'return_to_start') {
+      // Volver al inicio
+      localStorage.removeItem('userName');
+      window.location.href = `index.html?jugador=${playerId}`;
     }
   };
 
@@ -295,9 +299,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     // Usar transform en lugar de left/top para mejor rendimiento
-    requestAnimationFrame(() => {
-      draggedCircle.style.transform = `translate(${x - 25}px, ${y - 25}px)`
-    })
+    if (draggedCircle) {
+      requestAnimationFrame(() => {
+        draggedCircle.style.transform = `translate(${x - 25}px, ${y - 25}px)`
+      })
+    }
 
     // Verificar overlap con dropzone
     const dropRect = dropZone.getBoundingClientRect()
