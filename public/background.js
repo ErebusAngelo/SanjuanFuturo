@@ -1,33 +1,43 @@
 let particles = [];
 let gridTravelers = [];
-let gridSize = 80;
+let gridSize = 40;
 let time = 0;
 
 function setup() {
+    // Crear canvas de p5.js
     let canvas = createCanvas(windowWidth, windowHeight);
-    canvas.position(0, 0);
-    canvas.style('z-index', '-1');
-    canvas.style('position', 'fixed');
-    canvas.style('top', '0');
-    canvas.style('left', '0');
+    canvas.id('p5Canvas');
+    
+    // Posicionar el canvas de p5
+    let p5Canvas = document.getElementById('p5Canvas');
+    if (p5Canvas) {
+        p5Canvas.style.position = 'fixed';
+        p5Canvas.style.top = '0';
+        p5Canvas.style.left = '0';
+        p5Canvas.style.zIndex = '0';
+        p5Canvas.style.pointerEvents = 'none';
+        p5Canvas.style.display = 'none'; // Oculto por defecto
+    }
     
     // Crear partículas
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 20; i++) {
         particles.push(new Particle());
     }
     
     // Crear viajeros de la cuadrícula
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 2; i++) {
         gridTravelers.push(new GridTraveler());
     }
 }
 
 function draw() {
-    background(0, 20); // Fondo negro con trail sutil
+    background(0, 30); // Fondo negro con trail más marcado para mejor rendimiento
     time += 0.01;
     
-    // Dibujar grid sutil
-    drawGrid();
+    // Dibujar grid sutil (cada 2 frames para mejor rendimiento)
+    if (frameCount % 2 === 0) {
+        drawGrid();
+    }
     
     // Actualizar y mostrar partículas
     for (let i = 0; i < particles.length; i++) {
@@ -35,8 +45,10 @@ function draw() {
         particles[i].show();
     }
     
-    // Conectar partículas cercanas
-    connectParticles();
+    // Conectar partículas cercanas (solo cada 2 frames)
+    if (frameCount % 2 === 0) {
+        connectParticles();
+    }
     
     // Actualizar y mostrar viajeros de la cuadrícula
     for (let i = 0; i < gridTravelers.length; i++) {
@@ -83,8 +95,8 @@ function connectParticles() {
     for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
             let d = dist(particles[i].x, particles[i].y, particles[j].x, particles[j].y);
-            if (d < 120) {
-                let alpha = map(d, 0, 120, 40, 0);
+            if (d < 100) { // Reducido de 120 a 100 para menos conexiones
+                let alpha = map(d, 0, 100, 30, 0);
                 stroke(0, 212, 255, alpha);
                 line(particles[i].x, particles[i].y, particles[j].x, particles[j].y);
             }

@@ -417,6 +417,10 @@
                         updateStats();
                         addLog('Imagen generada exitosamente');
                         break;
+                    
+                    case 'prompt_generated':
+                        displayPromptInfo(message);
+                        break;
                 }
             };
 
@@ -548,12 +552,26 @@
             }
         }
 
+        function displayPromptInfo(data) {
+            addLog('=== SELECCIONES DE JUGADORES ===', 'info');
+            
+            // Mostrar prompt de cada jugador
+            data.playerPrompts.forEach(p => {
+                addLog(`Jugador ${p.playerId}: ${p.prompt}`, 'info');
+            });
+            
+            addLog(`\n📝 Palabras clave extraídas: ${data.keywords.join(', ')}`, 'info');
+            addLog(`\n🎨 PROMPT FINAL GENERADO:\n${data.finalPrompt}`, 'info');
+            addLog('=================================', 'info');
+        }
+
         function addLog(message, type = 'info') {
             const logContainer = document.getElementById('logContainer');
             const time = new Date().toLocaleTimeString();
             
             const entry = document.createElement('div');
             entry.className = 'log-entry';
+            entry.style.whiteSpace = 'pre-wrap';
             entry.innerHTML = `<span class="log-time">[${time}]</span><span>${message}</span>`;
             
             logContainer.insertBefore(entry, logContainer.firstChild);

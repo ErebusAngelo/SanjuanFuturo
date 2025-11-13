@@ -299,7 +299,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     // Usar transform en lugar de left/top para mejor rendimiento
-    if (draggedCircle) {
+    if (draggedCircle && draggedCircle.style) {
       requestAnimationFrame(() => {
         draggedCircle.style.transform = `translate(${x - 25}px, ${y - 25}px)`
       })
@@ -484,6 +484,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // Cambiar a una categoría específica
   function switchToCategory(index) {
     currentCategoryIndex = index
+
+    // LIMPIAR TODOS LOS CÍRCULOS ARRASTRADOS ANTES DE CAMBIAR
+    const draggedCircles = document.querySelectorAll('.dragged-circle');
+    draggedCircles.forEach(circle => circle.remove());
+    
+    // Resetear estado de drag
+    draggedCircle = null;
 
     // Renderizar la nueva categoría
     renderCategory(index)
