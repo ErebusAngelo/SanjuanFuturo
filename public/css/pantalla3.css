@@ -64,9 +64,9 @@
 }
 
 .user-name {
-    font-family: 'Arkitech', sans-serif;
-    font-size: 24px;
-    font-weight: 500;
+    font-family: 'Roboto', sans-serif;
+    font-size: 32px;
+    font-weight: 300;
     color: var(--primary-color);
     letter-spacing: 1px;
     text-shadow: 0 0 10px rgba(0, 212, 255, 0.6);
@@ -107,7 +107,7 @@
     }
     
     .user-name {
-        font-size: 20px;
+        font-size: 30px;
     }
     
     .user-icon svg {
@@ -653,7 +653,7 @@
 
 /* Texto de la opción */
 .option-text {
-    font-family: 'Arkitech', sans-serif;
+    font-family: 'Roboto', sans-serif;
     font-size: 18px;
     color: var(--primary-color);
     letter-spacing: 1px;
@@ -679,8 +679,8 @@
 
 /* Instrucción de arrastrar */
 .drag-instruction {
-    font-family: 'Arkitech', sans-serif;
-    font-size: 24px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 32px;
     color: var(--primary-color);
     text-align: center;
     margin: 50px 0 50px 0;
@@ -740,11 +740,11 @@
     }
     
     .option-text {
-        font-size: 19px;
+        font-size: 22px;
     }
     
     .drag-instruction {
-        font-size: 22px;
+        font-size: 31px;
     }
 }
 
