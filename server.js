@@ -242,8 +242,14 @@ function setupComfyWebSocketHandlers() {
 
 const app = express();
 
-app.use(express.static(path.join(__dirname, 'public')));
+// Middlewares para parsear body
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Servir archivos estáticos
+app.use(express.static(path.join(__dirname, 'public')));
 
 const port = 6250;
 const server = http.createServer(app);
@@ -653,6 +659,81 @@ app.get('/api/gallery-images', (req, res) => {
     } catch (error) {
         console.error('Error leyendo galería:', error);
         res.status(500).json({ error: 'Error al cargar galería' });
+    }
+});
+
+// Sistema de almacenamiento de deseos
+const deseosFilePath = path.join(__dirname, 'deseos.json');
+
+// Cargar deseos desde archivo
+function loadDeseos() {
+    try {
+        if (fs.existsSync(deseosFilePath)) {
+            const data = fs.readFileSync(deseosFilePath, 'utf8');
+            return JSON.parse(data);
+        }
+    } catch (error) {
+        console.error('Error cargando deseos:', error);
+    }
+    return [];
+}
+
+// Guardar deseos en archivo
+function saveDeseos(deseos) {
+    try {
+        fs.writeFileSync(deseosFilePath, JSON.stringify(deseos, null, 2));
+        return true;
+    } catch (error) {
+        console.error('Error guardando deseos:', error);
+        return false;
+    }
+}
+
+// Endpoint para obtener todos los deseos
+app.get('/api/deseos', (req, res) => {
+    const deseos = loadDeseos();
+    res.json(deseos);
+});
+
+// Endpoint para guardar un nuevo deseo
+app.post('/api/deseos', (req, res) => {
+    console.log('📥 POST /api/deseos recibido');
+    console.log('Body:', req.body);
+    
+    const { nombre, deseo, icon, timestamp } = req.body;
+    
+    if (!nombre || !deseo) {
+        console.error('❌ Faltan campos requeridos');
+        return res.status(400).json({ error: 'Nombre y deseo son requeridos' });
+    }
+    
+    const deseos = loadDeseos();
+    const nuevoDeseo = {
+        id: Date.now(),
+        nombre,
+        deseo,
+        icon: icon || '💭',
+        timestamp: timestamp || new Date().toISOString()
+    };
+    
+    deseos.push(nuevoDeseo);
+    
+    if (saveDeseos(deseos)) {
+        console.log('✓ Nuevo deseo guardado:', nuevoDeseo);
+        res.json({ success: true, deseo: nuevoDeseo });
+    } else {
+        console.error('❌ Error al guardar deseo');
+        res.status(500).json({ error: 'Error al guardar deseo' });
+    }
+});
+
+// Endpoint para eliminar todos los deseos (para testing)
+app.delete('/api/deseos', (req, res) => {
+    if (saveDeseos([])) {
+        console.log('✓ Todos los deseos eliminados');
+        res.json({ success: true });
+    } else {
+        res.status(500).json({ error: 'Error al eliminar deseos' });
     }
 });
 

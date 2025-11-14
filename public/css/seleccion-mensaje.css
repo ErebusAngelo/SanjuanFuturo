@@ -1,0 +1,505 @@
+/* Sobrescribir main-container para esta pantalla */
+.main-container {
+    justify-content: flex-start !important;
+    padding-top: 0 !important;
+}
+
+/* Header de la página */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8% 50px 40px;
+    width: 100%;
+    opacity: 0;
+    animation: fadeInHeader 1s ease-out 0.3s forwards;
+}
+
+@keyframes fadeInHeader {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Título a la izquierda */
+.header-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.header-left .text-subtitle {
+    font-family: 'Arkitech', sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--primary-color);
+    letter-spacing: 3px;
+    margin-bottom: 5px;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.8),
+                 0 0 20px rgba(0, 212, 255, 0.4);
+}
+
+.header-left .text-title {
+    font-family: 'Arkitech', sans-serif;
+    font-size: 48px;
+    font-weight: 500;
+    color: var(--primary-color);
+    letter-spacing: 4px;
+    margin: 0;
+    text-shadow: 0 0 20px rgba(0, 212, 255, 1),
+                 0 0 40px rgba(0, 212, 255, 0.6),
+                 0 0 60px rgba(0, 212, 255, 0.4);
+}
+
+/* Usuario a la derecha */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-name {
+    font-family: 'Roboto', sans-serif;
+    font-size: 32px;
+    font-weight: 300;
+    color: var(--primary-color);
+    letter-spacing: 1px;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.6);
+}
+
+.user-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-icon svg {
+    filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.8));
+    animation: iconPulse 2s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+    0%, 100% {
+        filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.8));
+    }
+    50% {
+        filter: drop-shadow(0 0 12px rgba(0, 212, 255, 1));
+    }
+}
+
+/* Grid de fichas de deseos */
+.wishes-grid {
+    width: 90%;
+    max-width: 950px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin: 80px auto 40px;
+    padding: 0 20px;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out 0.8s forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Ficha individual de deseo */
+.wish-card {
+    position: relative;
+    aspect-ratio: 1;
+    border: 2px solid var(--primary-color);
+    border-radius: 15px;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 50, 80, 0.3) 100%);
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    user-select: none;
+    opacity: 1; /* Cambiado de 0 a 1 */
+    transform: scale(1); /* Cambiado de 0.9 a 1 */
+    animation: cardAppear 0.6s ease-out forwards;
+    filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.4));
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+    text-align: center;
+}
+
+/* Animación escalonada para las fichas */
+.wish-card:nth-child(1) { animation-delay: 0.1s; }
+.wish-card:nth-child(2) { animation-delay: 0.15s; }
+.wish-card:nth-child(3) { animation-delay: 0.2s; }
+.wish-card:nth-child(4) { animation-delay: 0.25s; }
+.wish-card:nth-child(5) { animation-delay: 0.3s; }
+.wish-card:nth-child(6) { animation-delay: 0.35s; }
+.wish-card:nth-child(7) { animation-delay: 0.4s; }
+.wish-card:nth-child(8) { animation-delay: 0.45s; }
+.wish-card:nth-child(9) { animation-delay: 0.5s; }
+.wish-card:nth-child(10) { animation-delay: 0.55s; }
+.wish-card:nth-child(11) { animation-delay: 0.6s; }
+.wish-card:nth-child(12) { animation-delay: 0.65s; }
+
+@keyframes cardAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Efecto de brillo en el borde */
+.wish-card::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, transparent, rgba(0, 212, 255, 0.3), transparent);
+    border-radius: 15px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+}
+
+.wish-card:hover::before {
+    opacity: 1;
+    animation: borderRotate 2s linear infinite;
+}
+
+@keyframes borderRotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.wish-card:hover {
+    transform: translateY(-10px) scale(1.05);
+    filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.8))
+            drop-shadow(0 0 40px rgba(0, 212, 255, 0.4));
+    background: linear-gradient(135deg, rgba(0, 50, 80, 0.5) 0%, rgba(0, 100, 150, 0.3) 100%);
+}
+
+/* Icono de la ficha */
+.wish-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.8));
+    transition: all 0.3s ease;
+}
+
+.wish-card:hover .wish-icon {
+    transform: scale(1.2) rotate(5deg);
+    filter: drop-shadow(0 0 15px rgba(0, 212, 255, 1));
+}
+
+/* Texto del deseo */
+.wish-text {
+    font-family: 'Roboto', sans-serif;
+    font-size: 20px;
+    font-weight: 300;
+    color: var(--primary-color);
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.6);
+    line-height: 1.4;
+    transition: all 0.3s ease;
+}
+
+.wish-card:hover .wish-text {
+    text-shadow: 0 0 15px rgba(0, 212, 255, 1);
+}
+
+/* Cuando hay una selección, atenuar las no seleccionadas */
+.wishes-grid.has-selection .wish-card:not(.selected) {
+    opacity: 0.3;
+    filter: drop-shadow(0 0 4px rgba(0, 212, 255, 0.2));
+    transform: scale(0.95);
+}
+
+/* Ficha seleccionada */
+.wish-card.selected {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.9) 0%, rgba(0, 150, 200, 1) 100%);
+    border-color: #fff;
+    border-width: 3px;
+    transform: translateY(-15px) scale(1.12);
+    filter: drop-shadow(0 0 30px rgba(0, 212, 255, 1))
+            drop-shadow(0 0 60px rgba(0, 212, 255, 0.8))
+            drop-shadow(0 0 90px rgba(0, 212, 255, 0.5));
+    animation: selectedPulse 1.5s ease-in-out infinite;
+    z-index: 10;
+}
+
+@keyframes selectedPulse {
+    0%, 100% {
+        filter: drop-shadow(0 0 30px rgba(0, 212, 255, 1))
+                drop-shadow(0 0 60px rgba(0, 212, 255, 0.8))
+                drop-shadow(0 0 90px rgba(0, 212, 255, 0.5));
+    }
+    50% {
+        filter: drop-shadow(0 0 40px rgba(0, 212, 255, 1))
+                drop-shadow(0 0 80px rgba(0, 212, 255, 1))
+                drop-shadow(0 0 120px rgba(0, 212, 255, 0.7));
+    }
+}
+
+.wish-card.selected .wish-icon {
+    transform: scale(1.4) rotate(10deg);
+    filter: drop-shadow(0 0 25px rgba(255, 255, 255, 1));
+    animation: iconBounce 0.6s ease-out;
+}
+
+@keyframes iconBounce {
+    0% {
+        transform: scale(1) rotate(0deg);
+    }
+    50% {
+        transform: scale(1.6) rotate(15deg);
+    }
+    100% {
+        transform: scale(1.4) rotate(10deg);
+    }
+}
+
+.wish-card.selected .wish-text {
+    color: #000;
+    font-weight: 500;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 1);
+}
+
+/* Indicador de selección */
+.wish-card.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+    background: #000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: var(--primary-color);
+    font-weight: bold;
+    animation: checkAppear 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: 0 0 15px rgba(0, 212, 255, 1);
+}
+
+@keyframes checkAppear {
+    0% {
+        transform: scale(0) rotate(-180deg);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+/* Botón confirmar */
+.confirm-button {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 60px auto 80px;
+    padding: 22px 50px;
+    font-family: 'Arkitech', sans-serif;
+    font-size: 28px;
+    font-weight: 500;
+    color: #000;
+    background: var(--primary-color);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 
+        0 0 20px rgba(0, 212, 255, 0.6),
+        0 0 40px rgba(0, 212, 255, 0.4);
+    opacity: 0;
+    animation: fadeInUp 1s ease-out 1.2s forwards;
+}
+
+.confirm-button:not(:disabled) {
+    animation: fadeInUp 1s ease-out 1.2s forwards, buttonPulse 2s ease-in-out 2.2s infinite;
+}
+
+.button-arrow {
+    transition: transform 0.3s ease;
+}
+
+.confirm-button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    background: #333;
+    color: #666;
+    box-shadow: none;
+    animation: fadeInUp 1s ease-out 1.2s forwards;
+}
+
+.confirm-button:not(:disabled):hover {
+    transform: scale(1.05);
+    box-shadow: 
+        0 0 30px rgba(0, 212, 255, 0.9),
+        0 0 60px rgba(0, 212, 255, 0.7);
+}
+
+.confirm-button:not(:disabled):hover .button-arrow {
+    transform: translateX(5px);
+}
+
+.confirm-button:not(:disabled):active {
+    transform: scale(0.98);
+}
+
+@keyframes buttonPulse {
+    0%, 100% {
+        box-shadow: 
+            0 0 20px rgba(0, 212, 255, 0.6),
+            0 0 40px rgba(0, 212, 255, 0.4);
+    }
+    50% {
+        box-shadow: 
+            0 0 30px rgba(0, 212, 255, 0.9),
+            0 0 60px rgba(0, 212, 255, 0.7);
+    }
+}
+
+@keyframes checkAppear {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Responsive */
+@media screen and (max-width: 1080px) {
+    .page-header {
+        padding: 5% 100px 35px;
+    }
+    
+    .header-left .text-subtitle {
+        font-size: 18px;
+    }
+    
+    .header-left .text-title {
+        font-size: 47px;
+    }
+    
+    .user-name {
+        font-size: 30px;
+    }
+    
+    .message-section {
+        margin-top: 60px;
+    }
+    
+    .section-title-container {
+        width: 90%;
+        height: 100px;
+    }
+    
+    .section-title {
+        font-size: 28px;
+    }
+    
+    .instruction-text {
+        font-size: 24px;
+    }
+    
+    .message-text {
+        font-size: 20px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .page-header {
+        padding: 6% 30px 25px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+    
+    .header-right {
+        align-self: flex-end;
+    }
+    
+    .message-section {
+        margin-top: 40px;
+    }
+    
+    .instruction-text {
+        font-size: 20px;
+        margin: 40px 0 30px 0;
+    }
+    
+    .message-item {
+        padding: 20px 25px;
+        min-height: 80px;
+    }
+    
+    .message-circle {
+        width: 45px;
+        height: 45px;
+        min-width: 45px;
+    }
+    
+    .message-text {
+        font-size: 18px;
+    }
+    
+    .confirm-button {
+        font-size: 28px;
+        padding: 18px 50px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .instruction-text {
+        font-size: 18px;
+    }
+    
+    .message-item {
+        padding: 18px 20px;
+        min-height: 75px;
+    }
+    
+    .message-circle {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+    }
+    
+    .message-text {
+        font-size: 16px;
+    }
+    
+    .confirm-button {
+        font-size: 24px;
+        padding: 16px 40px;
+    }
+}

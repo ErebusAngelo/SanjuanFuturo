@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>San Juan Futuro - Deseos de la Comunidad</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/visualizacion-mensajes.css">
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header con título -->
+        <header class="page-header">
+            <div class="header-center">
+                <p class="text-subtitle">DESEOS PARA</p>
+                <h1 class="text-title">SAN JUAN FUTURO</h1>
+            </div>
+        </header>
+        
+        <!-- Contenedor de mensajes flotantes -->
+        <div class="floating-messages-container" id="floatingContainer">
+            <!-- Los mensajes se generan dinámicamente -->
+        </div>
+        
+        <!-- Contador de mensajes -->
+        <div class="message-counter">
+            <span id="messageCount">0</span>
+            <span class="counter-text">deseos compartidos</span>
+        </div>
+    </div>
+    
+    <script src="config.js"></script>
+    <script src="background.js"></script>
+    <script src="js/visualizacion-mensajes.js"></script>
+</body>
+</html>

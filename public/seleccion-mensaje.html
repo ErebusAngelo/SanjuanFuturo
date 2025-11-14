@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>San Juan Futuro - Elegí tu Deseo</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/seleccion-mensaje.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header con título y usuario -->
+        <header class="page-header">
+            <div class="header-left">
+                <p class="text-subtitle">ELEGÍ TU DESEO PARA</p>
+                <h1 class="text-title">SAN JUAN FUTURO</h1>
+            </div>
+            
+            <div class="header-right">
+                <span class="user-name" id="userName">Usuario</span>
+                <div class="user-icon">
+                    <svg width="55" height="55" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="20" cy="20" r="19" stroke="#00D4FF" stroke-width="2"/>
+                        <circle cx="20" cy="15" r="6" fill="#00D4FF"/>
+                        <path d="M8 32C8 26 12 22 20 22C28 22 32 26 32 32" stroke="#00D4FF" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Grid de fichas de deseos -->
+        <div class="wishes-grid" id="wishesGrid">
+            <!-- Las fichas se generan dinámicamente desde JS -->
+        </div>
+        
+        <!-- Botón confirmar -->
+        <button class="confirm-button" id="confirmButton" disabled>
+            <span class="button-text">CONFIRMAR SELECCIÓN</span>
+            <svg class="button-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+    </div>
+    
+    <script src="config.js"></script>
+    <script src="background.js"></script>
+    <script src="js/seleccion-mensaje.js"></script>
+</body>
+</html>

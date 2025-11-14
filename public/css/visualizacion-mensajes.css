@@ -1,0 +1,281 @@
+/* Sobrescribir main-container para esta pantalla */
+.main-container {
+    justify-content: flex-start !important;
+    padding-top: 0 !important;
+}
+
+/* Header de la página */
+.page-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8% 50px 40px;
+    width: 100%;
+    opacity: 0;
+    animation: fadeInHeader 1s ease-out 0.3s forwards;
+}
+
+@keyframes fadeInHeader {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Título centrado */
+.header-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.header-center .text-subtitle {
+    font-family: 'Arkitech', sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--primary-color);
+    letter-spacing: 3px;
+    margin-bottom: 5px;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.8),
+                 0 0 20px rgba(0, 212, 255, 0.4);
+}
+
+.header-center .text-title {
+    font-family: 'Arkitech', sans-serif;
+    font-size: 48px;
+    font-weight: 500;
+    color: var(--primary-color);
+    letter-spacing: 4px;
+    margin: 0;
+    text-shadow: 0 0 20px rgba(0, 212, 255, 1),
+                 0 0 40px rgba(0, 212, 255, 0.6),
+                 0 0 60px rgba(0, 212, 255, 0.4);
+}
+
+/* Contenedor de mensajes flotantes */
+.floating-messages-container {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 300px);
+    min-height: 600px;
+    overflow: hidden;
+    margin-top: 40px;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mensaje flotante individual */
+.floating-message {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.15) 0%, rgba(0, 100, 150, 0.1) 100%);
+    border: 2px solid var(--primary-color);
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.4),
+                0 0 40px rgba(0, 212, 255, 0.2);
+    backdrop-filter: blur(10px);
+    animation: floatAnimation 20s ease-in-out infinite;
+    opacity: 0;
+    transition: opacity 0.5s ease, transform 0.3s ease;
+    pointer-events: auto;
+    max-width: 280px;
+    min-width: 220px;
+}
+
+.floating-message.visible {
+    opacity: 1;
+}
+
+.floating-message.fade-out {
+    opacity: 0;
+    transition: opacity 1s ease;
+}
+
+/* Icono del mensaje - OCULTO */
+.message-icon {
+    display: none;
+}
+
+/* Texto del deseo */
+.message-wish {
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--primary-color);
+    text-align: center;
+    line-height: 1.4;
+    max-width: 250px;
+    text-shadow: 0 0 8px rgba(0, 212, 255, 0.6);
+    transition: all 0.3s ease;
+    min-height: 20px; /* Evitar salto de altura durante escritura */
+}
+
+/* Nombre del usuario */
+.message-author {
+    font-family: 'Arkitech', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--primary-color);
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
+    opacity: 0.8;
+    min-height: 18px; /* Evitar salto de altura durante escritura */
+}
+
+/* Animación de flotación */
+@keyframes floatAnimation {
+    0%, 100% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-20px) translateX(10px) rotate(2deg);
+    }
+    50% {
+        transform: translateY(-10px) translateX(-10px) rotate(-1deg);
+    }
+    75% {
+        transform: translateY(-25px) translateX(5px) rotate(1deg);
+    }
+}
+
+/* Efecto hover */
+.floating-message:hover {
+    transform: scale(1.1) !important;
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.8),
+                0 0 60px rgba(0, 212, 255, 0.4);
+    z-index: 100;
+}
+
+/* Contador de mensajes */
+.message-counter {
+    position: fixed;
+    bottom: 40px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: fit-content;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 12px;
+    padding: 18px 40px;
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(0, 100, 150, 0.15) 100%);
+    border: 2px solid var(--primary-color);
+    border-radius: 50px;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.6),
+                0 0 40px rgba(0, 212, 255, 0.3);
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out 1s forwards;
+}
+
+.message-counter #messageCount {
+    font-family: 'Arkitech', sans-serif;
+    font-size: 40px;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-shadow: 0 0 20px rgba(0, 212, 255, 1);
+    line-height: 1;
+}
+
+.counter-text {
+    font-family: 'Roboto', sans-serif;
+    font-size: 22px;
+    font-weight: 300;
+    color: var(--primary-color);
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.6);
+    line-height: 1;
+}
+
+/* Responsive */
+@media screen and (max-width: 1080px) {
+    .page-header {
+        padding: 5% 100px 35px;
+    }
+    
+    .header-center .text-subtitle {
+        font-size: 18px;
+    }
+    
+    .header-center .text-title {
+        font-size: 47px;
+    }
+    
+    .visualization-section {
+        margin-top: 60px;
+    }
+    
+    .section-title-container {
+        width: 90%;
+        height: 100px;
+    }
+    
+    .section-title {
+        font-size: 28px;
+    }
+    
+    .canvas-container {
+        height: 500px;
+    }
+    
+    .message-counter {
+        font-size: 24px;
+    }
+    
+    .message-counter span {
+        font-size: 32px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .page-header {
+        padding: 6% 30px 25px;
+    }
+    
+    .visualization-section {
+        margin-top: 40px;
+    }
+    
+    .canvas-container {
+        height: 400px;
+    }
+    
+    .message-counter {
+        font-size: 20px;
+    }
+    
+    .message-counter span {
+        font-size: 28px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .canvas-container {
+        height: 350px;
+    }
+    
+    .message-counter {
+        font-size: 18px;
+        margin-top: 30px;
+    }
+    
+    .message-counter span {
+        font-size: 24px;
+    }
+}
