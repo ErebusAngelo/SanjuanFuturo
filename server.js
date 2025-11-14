@@ -402,7 +402,8 @@ wss.on('connection', async (ws, req) => {
 
             try {
                 const params = message.params || {};
-                const promptId = await generarImagen(message.prompt, params);
+                const negativePrompt = message.negativePrompt || '';
+                const promptId = await generarImagen(message.prompt, params, negativePrompt);
                 promptDetails[promptId] = { prompt: message.prompt, ws: ws };
 
                 console.log(`✓ Prompt queued with ID: ${promptId}`);
@@ -858,7 +859,7 @@ async function validateModel(modelName) {
     }
 }
 
-async function generarImagen(promptText, params = {}) {
+async function generarImagen(promptText, params = {}, negativePrompt = '') {
     // Detectar si se usan múltiples LoRAs
     const useMultiLora = params.loras && Array.isArray(params.loras) && params.loras.length > 1;
     const promptWorkflow = useMultiLora ? await readWorkflowMultiLora() : await readWorkflowAPI();
@@ -874,7 +875,8 @@ async function generarImagen(promptText, params = {}) {
     const loraStrength = params.loraStrength || 1.0;
 
     console.log(`🎨 Generando imagen con Flux + LoRA:`, { 
-        promptText, 
+        promptText,
+        negativePrompt, 
         steps, 
         width, 
         height, 
@@ -939,8 +941,8 @@ async function generarImagen(promptText, params = {}) {
     // Nodo 6: CLIP Text Encode (Positive Prompt)
     promptWorkflow["6"]["inputs"]["text"] = promptText;
     
-    // Nodo 33: CLIP Text Encode (Negative Prompt) - vacío para Flux
-    promptWorkflow["33"]["inputs"]["text"] = "";
+    // Nodo 33: CLIP Text Encode (Negative Prompt)
+    promptWorkflow["33"]["inputs"]["text"] = negativePrompt || "";
     
     // Nodo 35: FluxGuidance
     promptWorkflow["35"]["inputs"]["guidance"] = guidance;

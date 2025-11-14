@@ -261,6 +261,7 @@ function renderPrompts() {
 function addPrompt(initialData) {
     const data = Object.assign({
         prompt: '',
+        negativePrompt: 'palmeras, palm trees, nieve, snow, ríos, rivers, botes, boats, tropical, cordillera, torres residenciales, rascacielos, skyscrapers, reflejos en el agua, water reflections, canales de agua, waterways',
         steps: 20,
         sanJuanStrength: 1,
         solarStrength: 1,
@@ -342,6 +343,7 @@ function generatePromptAtIndex(index, single = false) {
     const message = {
         type: 'generarImagen',
         prompt: data.prompt,
+        negativePrompt: data.negativePrompt || 'palmeras, palm trees, nieve, snow, ríos, rivers, botes, boats, tropical',
         params: {
             seed: seed,
             steps: data.steps || 20,
@@ -582,48 +584,115 @@ function loadConfigFromFile(file) {
 // ============================================
 
 function generateMagicPrompt() {
+    // PLANTILLAS VISUALES: Mapeo de conceptos abstractos a escenas concretas
+    const visualScenes = {
+        // INNOVACIÓN Y TECNOLOGÍA
+        'inteligencia artificial': {
+            scene: 'centro de investigación con pantallas holográficas',
+            elements: ['robots colaborativos', 'displays de datos', 'laboratorio moderno']
+        },
+        'robótica': {
+            scene: 'fábrica automatizada con robots industriales',
+            elements: ['brazos robóticos', 'líneas de producción', 'drones de inspección']
+        },
+        'transformación digital': {
+            scene: 'oficinas modernas con tecnología integrada',
+            elements: ['pantallas interactivas', 'espacios de coworking', 'fibra óptica visible']
+        },
+        
+        // AGRICULTURA Y GANADERÍA
+        'riego eficiente': {
+            scene: 'viñedos con sistema de riego por goteo automatizado',
+            elements: ['sensores de humedad', 'tuberías inteligentes', 'paneles de control']
+        },
+        'buenas prácticas agrícolas': {
+            scene: 'campos de cultivo con trabajadores y drones agrícolas',
+            elements: ['drones fumigadores', 'tractores modernos', 'trabajadores con tablets']
+        },
+        'agroindustria': {
+            scene: 'planta procesadora de alimentos con tecnología limpia',
+            elements: ['silos modernos', 'cintas transportadoras', 'empaque automatizado']
+        },
+        
+        // MINERÍA, INDUSTRIA Y COMERCIO
+        'industria limpia': {
+            scene: 'parque industrial con energía solar',
+            elements: ['naves industriales con paneles solares', 'chimeneas con filtros', 'zonas verdes']
+        },
+        'parques industriales': {
+            scene: 'complejo industrial moderno con áreas verdes',
+            elements: ['edificios industriales bajos', 'estacionamientos con sombra solar', 'vías de acceso amplias']
+        },
+        'comercio digital': {
+            scene: 'centro logístico con tecnología de distribución',
+            elements: ['almacenes automatizados', 'camiones eléctricos', 'códigos QR gigantes']
+        },
+        
+        // TALENTO Y OPORTUNIDADES
+        'nuevos empleos': {
+            scene: 'campus educativo con estudiantes y tecnología',
+            elements: ['aulas con realidad aumentada', 'espacios de innovación', 'talleres prácticos']
+        },
+        'energías renovables': {
+            scene: 'campo de paneles solares con turbinas eólicas',
+            elements: ['paneles fotovoltaicos', 'aerogeneradores', 'estaciones de carga eléctrica']
+        },
+        'turismo': {
+            scene: 'centro de visitantes con miradores modernos',
+            elements: ['pasarelas de vidrio', 'observatorio', 'señalización digital']
+        }
+    };
+    
     // Conceptos de pantalla3.js (categorías de oportunidades)
     const innovacionTech = [
-        'inteligencia artificial', 'robótica', 'transformación digital',
-        'ciencia aplicada', 'economía del conocimiento', 'modernización tecnológica'
+        'inteligencia artificial', 'robótica', 'transformación digital'
     ];
     const agriculturaGanaderia = [
-        'riego eficiente', 'buenas prácticas agrícolas', 'sanidad vegetal',
-        'agroindustria', 'sostenibilidad', 'producción sustentable'
+        'riego eficiente', 'buenas prácticas agrícolas', 'agroindustria'
     ];
     const mineriaIndustria = [
-        'industria limpia', 'parques industriales', 'comercio digital',
-        'PYMEs', 'diseño y calidad', 'exportación', 'logística moderna'
+        'industria limpia', 'parques industriales', 'comercio digital'
     ];
     const talentoOportunidades = [
-        'nuevos empleos', 'educación y desarrollo', 'herramientas financieras',
-        'inversiones productivas', 'diversificación', 'energías renovables', 'turismo'
+        'nuevos empleos', 'energías renovables', 'turismo'
     ];
 
-    // Paisajes y lugares típicos de San Juan
+    // Paisajes y lugares típicos de San Juan (SIN ríos, SIN palmeras, SIN nieve, SIN cordillera)
     const paisajesSJ = [
-        'viñedos', 'dique de Ullum', 'cerros de colores', 'valles',
-        'ciudad de San Juan', 'pueblos del interior', 'rutas cordilleranas',
+        'viñedos', 'dique de Ullum', 'cerros áridos de colores', 'valles secos',
+        'ciudad de San Juan', 'pueblos del interior', 'rutas de montaña',
         'mercado de productores', 'plazas históricas', 'observatorio astronómico',
-        'campos de olivos', 'ríos', 'parques urbanos', 'barrios tradicionales',
-        'terminal de ómnibus', 'costanera del dique'
+        'campos de olivos', 'parques urbanos', 'barrios tradicionales',
+        'terminal de ómnibus', 'costanera del dique', 'montañas áridas',
+        'zona desértica', 'oasis de cultivo', 'avenida principal',
+        'centro cívico', 'parque de la ciudad'
+    ];
+    
+    // Descriptores geográficos específicos de San Juan
+    const geoDescriptors = [
+        'clima árido', 'montañas secas sin nieve al fondo', 'vegetación desértica',
+        'arquitectura de adobe', 'cielo despejado', 'terreno rocoso',
+        'sierras secas al fondo', 'paisaje árido', 'arquitectura baja',
+        'ciudad de baja altura', 'edificios de poca altura'
     ];
 
-    // Términos de estética solarpunk
+    // Términos de estética solarpunk (adaptados a arquitectura baja)
     const solarpunkTerms = [
-        'paneles solares integrados', 'arquitectura verde', 'jardines verticales',
+        'paneles solares integrados', 'arquitectura verde de baja altura', 'jardines verticales',
         'luces de neón cian', 'estructuras bioluminiscentes', 'energía limpia',
         'techos verdes', 'turbinas eólicas discretas', 'pasarelas de vidrio',
         'displays holográficos', 'vehículos eléctricos', 'drones',
         'iluminación solar', 'reciclaje avanzado', 'huertas comunitarias',
-        'fuentes de agua reciclada', 'fibras ópticas decorativas'
+        'fuentes de agua reciclada', 'fibras ópticas decorativas',
+        'edificios bajos modernos', 'construcciones horizontales', 'plazas tecnológicas'
     ];
 
-    // Modificadores de atmósfera
+    // Modificadores de atmósfera (evitar agua en exceso)
     const atmosfera = [
         'al atardecer', 'de noche con cielo estrellado', 'bajo la luz del día',
-        'con reflejos en el agua', 'iluminado en tonos turquesa',
-        'ambiente optimista', 'cielo limpio y cálido', 'noche clara'
+        'iluminado en tonos turquesa', 'ambiente optimista', 
+        'cielo limpio y cálido', 'noche clara', 'luz intensa del sol',
+        'atmósfera seca y clara'
     ];
 
     // Selección aleatoria
@@ -638,8 +707,9 @@ function generateMagicPrompt() {
     const useConcept2 = Math.random() > 0.5;
     const concept2 = useConcept2 ? randomFrom(allConcepts.filter(c => c !== concept1)) : null;
 
-    // Paisaje de San Juan
+    // Paisaje de San Juan + descriptor geográfico
     const paisaje = randomFrom(paisajesSJ);
+    const geoDesc = randomFrom(geoDescriptors);
 
     // 1-3 elementos solarpunk
     const numSolar = Math.floor(Math.random() * 3) + 1;
@@ -652,15 +722,30 @@ function generateMagicPrompt() {
     // Atmósfera
     const atm = randomFrom(atmosfera);
 
-    // Construir prompt
-    let prompt = `${paisaje} de San Juan`;
-    if (concept2) {
-        prompt += `, con ${concept1} y ${concept2}`;
+    // Construir prompt usando plantilla visual si existe
+    let prompt = '';
+    const mainConcept = concept1;
+    const visualTemplate = visualScenes[mainConcept];
+    
+    if (visualTemplate) {
+        // Usar plantilla visual específica
+        prompt = `${visualTemplate.scene} en San Juan, Argentina, ${geoDesc}`;
+        prompt += `, ${visualTemplate.elements.slice(0, 2).join(', ')}`;
+        prompt += `, ${solarElements.slice(0, 2).join(', ')}`;
     } else {
-        prompt += `, con ${concept1}`;
+        // Fallback al método anterior
+        prompt = `${paisaje} de San Juan, Argentina, ${geoDesc}`;
+        if (concept2) {
+            prompt += `, con ${concept1} y ${concept2}`;
+        } else {
+            prompt += `, con ${concept1}`;
+        }
+        prompt += `, ${solarElements.join(', ')}`;
     }
-    prompt += `, ${solarElements.join(', ')}`;
-    prompt += `, ${atm}, estilo solarpunk futurista`;
+    prompt += `, ${atm}, estilo solarpunk futurista, arquitectura moderna de baja altura adaptada al desierto`;
+    
+    // PROMPT NEGATIVO: todo lo que NO debe aparecer
+    const negativePrompt = 'palmeras, palm trees, coconut trees, tropical plants, nieve, snow, snowy mountains, ríos, rivers, streams, canales, channels, botes, boats, gondolas, venecia, venice, selva, jungle, tropical, humidity, lluvia, rain, cascadas, waterfalls, montañas nevadas, cordillera, cordillera nevada, torres residenciales altas, tall residential towers, rascacielos residenciales, residential skyscrapers, apartment towers, edificios de departamentos altos, reflejos en el agua, water reflections, canales de agua, water channels, calles con agua, waterways';
 
     // Randomizar parámetros usando la configuración editable
     const sjRange = MAGIC_PROMPT_CONFIG.sanJuanStrength.max - MAGIC_PROMPT_CONFIG.sanJuanStrength.min;
@@ -675,6 +760,7 @@ function generateMagicPrompt() {
 
     return {
         prompt,
+        negativePrompt,
         steps,
         sanJuanStrength,
         solarStrength,
@@ -729,7 +815,8 @@ window.addEventListener('load', () => {
     loadConfigFromLocalStorage();
     if (prompts.length === 0) {
         addPrompt({
-            prompt: 'Paisajes de San Juan, solarpunk style',
+            prompt: 'Ciudad de San Juan, Argentina, clima árido, sierras secas al fondo, arquitectura baja moderna con paneles solares, edificios de poca altura, estilo solarpunk futurista adaptado al desierto',
+            negativePrompt: 'palmeras, palm trees, nieve, snow, ríos, rivers, botes, boats, tropical, jungle, canales, channels, venecia, venice, cordillera, torres residenciales, rascacielos, skyscrapers, reflejos en el agua, water reflections, canales de agua, waterways',
             steps: 20,
             sanJuanStrength: 1,
             solarStrength: 1,
