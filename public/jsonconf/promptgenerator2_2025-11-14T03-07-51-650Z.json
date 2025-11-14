@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "prompts": [
+    {
+      "prompt": "Paisajes de San Juan, solarpunk style",
+      "sanJuanStrength": 1.35,
+      "solarStrength": 0.4,
+      "guidance": 5
+    },
+    {
+      "prompt": "Paisajes de San Juan, solarpunk style",
+      "sanJuanStrength": 1.35,
+      "solarStrength": 0.45,
+      "guidance": 1.8
+    },
+    {
+      "prompt": "Paisajes de San Juan, solarpunk style",
+      "sanJuanStrength": 1,
+      "solarStrength": 1,
+      "guidance": 3.5
+    }
+  ]
+}

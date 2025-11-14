@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "description": "Prompts base para paisajes futuristas de San Juan con LoRA San Juan + Solarpunk",
+  "prompts": [
+    "Ciudad de San Juan al atardecer, cerros iluminados con paneles solares integrados, ríos de luz recorriendo las calles, arquitectura baja con techos verdes y carteles holográficos, estilo solarpunk futurista",
+    "Viñedos de San Juan transformados en granjas verticales bioluminiscentes, estructura de terrazas brillando en tonos turquesa, canales de riego inteligentes y drones agrícolas en el cielo, estética solarpunk",
+    "Dique de Ullum convertido en un lago de energía limpia, plataformas flotantes con jardines, turbinas invisibles bajo el agua y un paseo costero con faroles de luz solar, noche clara, estilo futurista",
+    "Centro cívico de San Juan reimaginado como plaza tecnológica, árboles metálicos que capturan energía solar, bancos interactivos y pavimento que genera electricidad al caminar, gente disfrutando del espacio público",
+    "Barrio tradicional sanjuanino con casas de adobe restauradas, ampliadas con estructuras de vidrio y metal reciclado, huertas comunitarias en los techos y luces de neón suaves en las paredes, solarpunk cálido",
+    "Ruta que atraviesa los cerros de colores, ciclovías luminosas suspendidas, vehículos eléctricos minimalistas y estaciones de carga integradas en la roca, cielo estrellado de San Juan, estética futurista",
+    "Parque urbano de San Juan con árboles nativos aumentados con fibras ópticas, esculturas cinéticas movidas por el viento zonda, niños jugando en fuentes de agua reciclada, ambiente optimista solarpunk",
+    "Observatorio astronómico en los cerros de San Juan, domos transparentes, telescopios holográficos, senderos iluminados con energía solar, cielo nocturno lleno de estrellas y satélites brillando",
+    "Terminal de ómnibus de San Juan transformada en hub de movilidad sustentable, buses eléctricos, estaciones de bicicletas y monopatines, techo cubierto de paneles solares y jardines, mucha luz de neón azul",
+    "Pueblo sanjuanino en el valle, casas bajas rodeadas de viñedos y olivos, torres de energía eólica discretas entre las montañas, iluminación suave en tonos cian, mezcla de tradición y tecnología",
+    "Costanera de un dique sanjuanino convertida en paseo futurista, pasarelas de vidrio, árboles iluminados desde las raíces, kioscos modulares de comida local, reflejos de luces en el agua de noche",
+    "Mercado de productores de San Juan del futuro, puestos de frutas y vinos con displays holográficos, techumbre translúcida llena de paneles solares, gente con ropa urbana colorida, ambiente solarpunk alegre",
+    "Escena aérea de la ciudad de San Juan, cuadrículas de barrios con techos verdes, avenidas iluminadas en cian, estaciones de transporte público autónomo y un horizonte de cerros recortados",
+    "Plaza histórica de San Juan reimaginada, monumentos restaurados rodeados de anillos de luz, fuentes que purifican el agua en tiempo real, pantallas discretas mostrando datos de energía limpia",
+    "Carretera que se adentra en un valle sanjuanino, campos de paneles solares siguiendo la forma del paisaje, pequeñas comunidades autosustentables conectadas por líneas de luz, cielo limpio y cálido"
+  ]
+}

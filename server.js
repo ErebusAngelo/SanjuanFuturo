@@ -705,6 +705,11 @@ async function readWorkflowAPI() {
     return JSON.parse(data);
 }
 
+async function readWorkflowMultiLora() {
+    const data = await fs.promises.readFile(path.join(__dirname, 'comfy', 'workflow_multilora.json'), 'utf8');
+    return JSON.parse(data);
+}
+
 async function uploadImage(filePath) {
     const formData = new FormData();
     formData.append('image', fs.createReadStream(filePath));
@@ -854,7 +859,9 @@ async function validateModel(modelName) {
 }
 
 async function generarImagen(promptText, params = {}) {
-    const promptWorkflow = await readWorkflowAPI();
+    // Detectar si se usan múltiples LoRAs
+    const useMultiLora = params.loras && Array.isArray(params.loras) && params.loras.length > 1;
+    const promptWorkflow = useMultiLora ? await readWorkflowMultiLora() : await readWorkflowAPI();
 
     // Parámetros por defecto para Flux
     const steps = params.steps || 20;
@@ -874,8 +881,8 @@ async function generarImagen(promptText, params = {}) {
         seed, 
         model, 
         guidance,
-        loraName,
-        loraStrength 
+        multiLora: useMultiLora,
+        loras: useMultiLora ? params.loras : [{ name: loraName, strength: loraStrength }]
     });
 
     // Validar si el modelo existe
@@ -910,10 +917,24 @@ async function generarImagen(promptText, params = {}) {
     // Configurar parámetros del workflow Flux
     // Nodo 30: CheckpointLoaderSimple (ya configurado arriba)
     
-    // Nodo 38: LoraLoader
-    promptWorkflow["38"]["inputs"]["lora_name"] = loraName;
-    promptWorkflow["38"]["inputs"]["strength_model"] = loraStrength;
-    promptWorkflow["38"]["inputs"]["strength_clip"] = loraStrength;
+    if (useMultiLora) {
+        // Multi-LoRA: configurar nodos 38 (primer LoRA) y 50 (segundo LoRA)
+        const lora1 = params.loras[0];
+        const lora2 = params.loras[1];
+        
+        promptWorkflow["38"]["inputs"]["lora_name"] = lora1.name;
+        promptWorkflow["38"]["inputs"]["strength_model"] = lora1.strength;
+        promptWorkflow["38"]["inputs"]["strength_clip"] = lora1.strength;
+        
+        promptWorkflow["50"]["inputs"]["lora_name"] = lora2.name;
+        promptWorkflow["50"]["inputs"]["strength_model"] = lora2.strength;
+        promptWorkflow["50"]["inputs"]["strength_clip"] = lora2.strength;
+    } else {
+        // Single LoRA: solo nodo 38
+        promptWorkflow["38"]["inputs"]["lora_name"] = loraName;
+        promptWorkflow["38"]["inputs"]["strength_model"] = loraStrength;
+        promptWorkflow["38"]["inputs"]["strength_clip"] = loraStrength;
+    }
     
     // Nodo 6: CLIP Text Encode (Positive Prompt)
     promptWorkflow["6"]["inputs"]["text"] = promptText;

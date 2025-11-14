@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador Multi-Prompt - San Juan Futuro</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/promptgenerator2.css">
+</head>
+<body>
+    <div class="connection-status" id="connectionStatus">
+        Conectando...
+    </div>
+
+    <!-- ... -->
+    <div class="generator-container">
+        <div class="generator-content">
+            <div class="title-section">
+                <h1>MULTI PROMPT GENERATOR</h1>
+                <p>San Juan Futuro · Flux + San Juan + Solarpunk</p>
+            </div>
+
+            <div class="prompt-list-section">
+                <div class="prompt-header">
+                    <h2>Prompts</h2>
+                    <div class="prompt-actions">
+                        <button class="small-button" id="addPromptBtn">+ Agregar prompt</button>
+                        <button class="small-button" id="addMagicPromptBtn" style="background: linear-gradient(135deg, rgba(255, 0, 255, 0.2), rgba(138, 43, 226, 0.3)); border-color: #ff00ff;">✨ Prompt mágico</button>
+                        <button class="small-button" id="clearPromptsBtn">Limpiar lista</button>
+                    </div>
+                </div>
+                <div id="promptList"></div>
+            </div>
+
+            <div class="main-buttons">
+                <button class="generate-all-button" id="generateAllBtn">GENERAR TODOS LOS PROMPTS</button>
+                <div class="json-buttons">
+                    <button class="small-button" id="saveConfigBtn">Guardar JSON</button>
+                    <button class="small-button" id="loadConfigBtn">Cargar JSON</button>
+                    <input type="file" id="configFileInput" accept="application/json" style="display:none">
+                </div>
+            </div>
+
+            <div class="status-section">
+                <div style="width:100%">
+                    <div class="status-text" id="statusText">Listo para generar</div>
+                    <div class="progress-bar" id="globalProgressBar" style="display:none">
+                        <div class="progress-fill" id="globalProgressFill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="gallery-section">
+                <div class="prompt-header" style="margin-bottom: 15px;">
+                    <h2>Galería de resultados</h2>
+                    <div class="prompt-actions">
+                        <button class="small-button" id="clearGalleryBtn">Limpiar galería</button>
+                    </div>
+                </div>
+                <div class="gallery-grid" id="galleryGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para ver imágenes en grande -->
+    <div class="gallery-modal-overlay" id="imageModal">
+        <div class="gallery-modal-content">
+            <button class="gallery-modal-close" id="modalCloseBtn">✕</button>
+            <img id="modalImage" src="" alt="Imagen grande">
+        </div>
+    </div>
+
+    <script src="background.js"></script>
+    <script src="js/simgen.js"></script>
+</body>
+</html>
