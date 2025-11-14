@@ -6,17 +6,17 @@
 const MAGIC_PROMPT_CONFIG = {
     // Rango de fuerza del LoRA de San Juan
     sanJuanStrength: {
-        min: .5,
-        max: .5
+        min: .25,
+        max: .76
     },
     // Rango de fuerza del LoRA Solarpunk
     solarpunkStrength: {
-        min: 0.5,
-        max: .5
+        min: 0.25,
+        max: .75
     },
     // Rango de Flux guidance
     fluxGuidance: {
-        min: 3.5,
+        min: 2.5,
         max: 3.5
     },
     // Rango de steps (número de pasos de generación)

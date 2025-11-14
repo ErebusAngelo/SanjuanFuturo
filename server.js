@@ -179,7 +179,15 @@ function setupComfyWebSocketHandlers() {
                 });
 
                 const filename = path.join(__dirname, 'public', 'imagenes', subfolder, image.filename);
-                await downloadImage(downloadUrl, filename, subfolder);
+                
+                // Preparar metadata para guardar
+                const metadata = details ? {
+                    prompt: details.prompt,
+                    negativePrompt: details.negativePrompt,
+                    params: details.params
+                } : null;
+                
+                await downloadImage(downloadUrl, filename, subfolder, metadata);
                 console.log(`Downloaded image: ${filename}`);
 
                 const imagePath = subfolder ? `/imagenes/${subfolder}/${image.filename}` : `/imagenes/${image.filename}`;
@@ -404,7 +412,12 @@ wss.on('connection', async (ws, req) => {
                 const params = message.params || {};
                 const negativePrompt = message.negativePrompt || '';
                 const promptId = await generarImagen(message.prompt, params, negativePrompt);
-                promptDetails[promptId] = { prompt: message.prompt, ws: ws };
+                promptDetails[promptId] = { 
+                    prompt: message.prompt, 
+                    negativePrompt: negativePrompt,
+                    params: params,
+                    ws: ws 
+                };
 
                 console.log(`✓ Prompt queued with ID: ${promptId}`);
                 ws.send(JSON.stringify({
@@ -569,7 +582,9 @@ async function generateCombinedImage(combinedPrompt) {
         
         const promptId = await generarImagen(combinedPrompt, params);
         promptDetails[promptId] = { 
-            prompt: combinedPrompt, 
+            prompt: combinedPrompt,
+            negativePrompt: '',
+            params: params,
             ws: systemState.avatar.ws,
             isSystemGenerated: true
         };
@@ -789,7 +804,7 @@ async function getHistory(promptId) {
     });
 }
 
-async function downloadImage(url, filename, subfolder) {
+async function downloadImage(url, filename, subfolder, metadata = null) {
     return new Promise((resolve, reject) => {
         const dir = path.dirname(filename);
 
@@ -804,12 +819,70 @@ async function downloadImage(url, filename, subfolder) {
         httpModule.get(url, (response) => {
             response.pipe(file);
             file.on('finish', () => {
-                file.close(resolve);
+                file.close(() => {
+                    // Guardar archivo .txt con metadata si existe
+                    if (metadata) {
+                        const txtFilePath = filePath.replace(/\.[^.]+$/, '.txt');
+                        const metadataContent = formatMetadata(metadata);
+                        fs.writeFileSync(txtFilePath, metadataContent, 'utf8');
+                        console.log(`✓ Metadata guardada en: ${txtFilePath}`);
+                    }
+                    resolve();
+                });
             });
         }).on('error', (err) => {
             fs.unlink(filePath, () => reject(err));
         });
     });
+}
+
+// Función para formatear la metadata en texto legible
+function formatMetadata(metadata) {
+    let content = '='.repeat(60) + '\n';
+    content += 'METADATA DE GENERACIÓN DE IMAGEN\n';
+    content += '='.repeat(60) + '\n\n';
+    
+    // Prompt
+    content += 'PROMPT:\n';
+    content += metadata.prompt + '\n\n';
+    
+    // Negative Prompt
+    if (metadata.negativePrompt) {
+        content += 'NEGATIVE PROMPT:\n';
+        content += metadata.negativePrompt + '\n\n';
+    }
+    
+    // Parámetros
+    if (metadata.params) {
+        content += 'PARÁMETROS DE GENERACIÓN:\n';
+        content += '-'.repeat(60) + '\n';
+        
+        const params = metadata.params;
+        
+        if (params.seed) content += `Seed: ${params.seed}\n`;
+        if (params.steps) content += `Steps: ${params.steps}\n`;
+        if (params.width) content += `Width: ${params.width}\n`;
+        if (params.height) content += `Height: ${params.height}\n`;
+        if (params.model) content += `Model: ${params.model}\n`;
+        if (params.guidance) content += `Guidance: ${params.guidance}\n`;
+        
+        // LoRAs
+        if (params.loras && Array.isArray(params.loras)) {
+            content += '\nLoRAs:\n';
+            params.loras.forEach((lora, index) => {
+                content += `  ${index + 1}. ${lora.name} (Strength: ${lora.strength})\n`;
+            });
+        } else if (params.loraName) {
+            content += `\nLoRA: ${params.loraName}\n`;
+            if (params.loraStrength) content += `LoRA Strength: ${params.loraStrength}\n`;
+        }
+    }
+    
+    content += '\n' + '='.repeat(60) + '\n';
+    content += `Generado: ${new Date().toLocaleString('es-AR')}\n`;
+    content += '='.repeat(60) + '\n';
+    
+    return content;
 }
 
 // Función para validar si un modelo existe

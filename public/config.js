@@ -52,7 +52,7 @@ const CONFIG = {
         }
     },
     
-    // Tipografía
+    // Tipografía 
     fonts: {
         primary: 'Roboto',
         display: 'Arkitech'
