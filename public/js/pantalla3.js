@@ -52,6 +52,97 @@ function connectWebSocket() {
       // Volver al inicio
       localStorage.removeItem('userName');
       window.location.href = `index.html?jugador=${playerId}`;
+    } else if (message.type === 'image_generated') {
+      // Imagen generada exitosamente
+      console.log('✅ Imagen generada:', message.url);
+      
+      // Mostrar mensaje de éxito y programar retorno
+      const filesContainer = document.getElementById('filesContainer');
+      if (filesContainer) {
+        filesContainer.innerHTML = `
+          <div style="text-align: center; padding: 50px; color: #00D4FF;">
+            <h2 style="font-size: 2rem; margin-bottom: 20px;">¡Imagen Generada!</h2>
+            <p style="font-size: 1.5rem; opacity: 0.8;">Tu imagen se está mostrando en la pantalla principal</p>
+            <div style="margin-top: 30px;">
+              <p style="font-size: 1.2rem; opacity: 0.6;">Regresando al inicio en <span id="countdown">10</span> segundos...</p>
+            </div>
+          </div>
+        `;
+        
+        // Countdown y retorno automático
+        let countdown = 10;
+        const countdownElement = document.getElementById('countdown');
+        const countdownInterval = setInterval(() => {
+          countdown--;
+          if (countdownElement) {
+            countdownElement.textContent = countdown;
+          }
+          
+          if (countdown <= 0) {
+            clearInterval(countdownInterval);
+            // Limpiar selecciones y volver al inicio
+            localStorage.removeItem('userSelections');
+            localStorage.removeItem('userName');
+            window.location.href = `index.html?jugador=${playerId}`;
+          }
+        }, 1000);
+      }
+    } else if (message.type === 'generation_progress') {
+      // Actualizar progreso de generación
+      console.log('🔄 Progreso:', message.percent + '%');
+      
+      const filesContainer = document.getElementById('filesContainer');
+      if (filesContainer && message.percent) {
+        filesContainer.innerHTML = `
+          <div style="text-align: center; padding: 50px; color: #00D4FF;">
+            <h2 style="font-size: 2rem; margin-bottom: 20px;">Generando tu imagen...</h2>
+            <div style="margin: 30px 0;">
+              <div style="width: 300px; height: 20px; background: rgba(0, 212, 255, 0.2); border-radius: 10px; margin: 0 auto; overflow: hidden;">
+                <div style="width: ${message.percent}%; height: 100%; background: linear-gradient(90deg, #00D4FF, #00A8CC); border-radius: 10px; transition: width 0.3s ease;"></div>
+              </div>
+              <p style="margin-top: 15px; font-size: 1.2rem;">${message.percent}% completado</p>
+            </div>
+            <div class="loading-dots">
+              <span>●</span>
+              <span>●</span>
+              <span>●</span>
+            </div>
+          </div>
+        `;
+      }
+    } else if (message.type === 'generation_error') {
+      // Error en la generación
+      console.error('❌ Error generando imagen:', message.error);
+      
+      const filesContainer = document.getElementById('filesContainer');
+      if (filesContainer) {
+        filesContainer.innerHTML = `
+          <div style="text-align: center; padding: 50px; color: #ff4444;">
+            <h2 style="font-size: 2rem; margin-bottom: 20px;">Error al generar imagen</h2>
+            <p style="font-size: 1.5rem; opacity: 0.8;">Hubo un problema. Regresando al inicio...</p>
+            <div style="margin-top: 30px;">
+              <p style="font-size: 1.2rem; opacity: 0.6;">Regresando en <span id="errorCountdown">5</span> segundos...</p>
+            </div>
+          </div>
+        `;
+        
+        // Countdown de error más corto
+        let countdown = 5;
+        const countdownElement = document.getElementById('errorCountdown');
+        const countdownInterval = setInterval(() => {
+          countdown--;
+          if (countdownElement) {
+            countdownElement.textContent = countdown;
+          }
+          
+          if (countdown <= 0) {
+            clearInterval(countdownInterval);
+            localStorage.removeItem('userSelections');
+            localStorage.removeItem('userName');
+            window.location.href = `index.html?jugador=${playerId}`;
+          }
+        }, 1000);
+      }
     }
   };
 
@@ -539,6 +630,14 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         `;
       }
+      
+      // Fallback: Si no llega respuesta del WebSocket en 60 segundos, volver al inicio
+      setTimeout(() => {
+        console.log('⏰ Timeout: Regresando al inicio automáticamente');
+        localStorage.removeItem('userSelections');
+        localStorage.removeItem('userName');
+        window.location.href = `index.html?jugador=${playerId}`;
+      }, 60000); // 60 segundos
     }
   }
 
