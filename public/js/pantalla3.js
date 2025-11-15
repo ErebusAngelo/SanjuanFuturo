@@ -445,37 +445,86 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("Todas las categorías completadas!")
       console.log("Selecciones finales:", userSelections)
       
-      // Generar prompt a partir de las selecciones
-      const promptParts = [];
-      for (const categoryId in userSelections) {
-        const category = categoriesData.find(c => c.id === categoryId);
-        if (category && userSelections[categoryId].length > 0) {
-          promptParts.push(`${category.name}: ${userSelections[categoryId].join(', ')}`);
+      // Usar el mega algoritmo para generar imagen
+      console.log("🎨 Iniciando generación con mega algoritmo...");
+      
+      // Crear instancia del mega generador
+      if (typeof MegaPromptGenerator !== 'undefined') {
+        const megaGenerator = new MegaPromptGenerator();
+        
+        // Generar prompt desde selecciones
+        const promptData = megaGenerator.generateFromUserSelections(userSelections);
+        
+        console.log('✨ Prompt generado con mega algoritmo:', promptData);
+        
+        // Enviar al servidor para generar imagen
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          const seed = Math.floor(Math.random() * 18446744073709551614) + 1;
+          
+          const message = {
+            type: 'generarImagen',
+            prompt: promptData.prompt,
+            negativePrompt: promptData.negativePrompt,
+            params: {
+              seed: seed,
+              steps: promptData.steps,
+              width: 1184,
+              height: 1184,
+              model: 'flux1-dev-fp8.safetensors',
+              guidance: promptData.guidance,
+              loras: [
+                {
+                  name: 'Flux_SanJuanv1.safetensors',
+                  strength: promptData.sanJuanStrength
+                },
+                {
+                  name: 'Solarpunk style v1-step00001900.safetensors',
+                  strength: promptData.solarStrength
+                }
+              ]
+            }
+          };
+          
+          console.log('📤 Enviando mensaje de generación:', message);
+          ws.send(JSON.stringify(message));
+        } else {
+          console.error('❌ WebSocket no conectado');
+        }
+      } else {
+        console.error('❌ MegaPromptGenerator no disponible, usando método básico');
+        
+        // Fallback al método anterior
+        const promptParts = [];
+        for (const categoryId in userSelections) {
+          const category = categoriesData.find(c => c.id === categoryId);
+          if (category && userSelections[categoryId].length > 0) {
+            promptParts.push(`${category.name}: ${userSelections[categoryId].join(', ')}`);
+          }
+        }
+        
+        const finalPrompt = promptParts.join('. ');
+        console.log("Prompt básico generado:", finalPrompt);
+        
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          const message = {
+            type: 'generarImagen',
+            prompt: finalPrompt,
+            params: {
+              seed: Math.floor(Math.random() * 1000000),
+              steps: 20,
+              width: 1024,
+              height: 1024,
+              model: 'flux1-dev-fp8.safetensors'
+            }
+          };
+          ws.send(JSON.stringify(message));
         }
       }
       
-      const finalPrompt = `San Juan del futuro con: ${promptParts.join('. ')}`;
-      console.log("Prompt generado:", finalPrompt);
-      
-      // Enviar prompt al servidor
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({
-          type: 'player_prompt',
-          prompt: finalPrompt
-        }));
-        
-        console.log("Prompt enviado al servidor.");
-        
-        // Determinar mensaje según número de jugadores
-        let waitMessage = '';
-        if (numPlayers === 1) {
-          waitMessage = 'Generando tu imagen...';
-        } else {
-          waitMessage = 'Esperando a los demás jugadores...';
-        }
-        
-        // Mostrar mensaje de espera
-        const filesContainer = document.getElementById("filesContainer");
+      // Mostrar mensaje de finalización
+      const waitMessage = "Tu imagen se está generando...";
+      const filesContainer = document.getElementById('filesContainer');
+      if (filesContainer) {
         filesContainer.innerHTML = `
           <div style="text-align: center; padding: 50px; color: #00D4FF;">
             <h2 style="font-size: 2rem; margin-bottom: 20px;">¡Gracias por tu participación!</h2>

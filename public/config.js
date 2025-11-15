@@ -15,7 +15,16 @@ const CONFIG = {
         glowColor: '#00D4FF',      // Color del glow (celeste principal)
         glowIntensity: '30px',     // Intensidad del glow
         animationDuration: '1.5s', // Duración de la animación de reveal
-        displayDuration: 600000     // Tiempo que permanece visible la imagen (10 segundos)
+        displayDuration: 5000     // Tiempo que permanece visible la imagen (10 segundos)
+    },
+
+    // Mega algoritmo de generación de imágenes
+    imageGeneration: {
+        fluxGuidance: 3.5,         // Flux guidance calibrado
+        fuerzaSanJuan: 0.55,       // Fuerza San Juan calibrada
+        fuerzaSolarpunk: 0.8,      // Fuerza Solarpunk calibrada
+        steps: 20,                 // Steps calibrados
+        variabilityFactor: 0.45    // Factor de variabilidad para generar imágenes diversas
     },
     
     // Avatar.html - Barra de progreso

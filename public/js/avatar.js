@@ -313,12 +313,167 @@ function initSecretPanel() {
     }, 1000);
 }
 
+// Panel de configuración de generación
+function initConfigPanel() {
+    const panel = document.getElementById('configPanel');
+    const sliders = {
+        fluxGuidance: document.getElementById('fluxGuidanceSlider'),
+        fuerzaSanJuan: document.getElementById('fuerzaSanJuanSlider'),
+        fuerzaSolarpunk: document.getElementById('fuerzaSolarpunkSlider'),
+        steps: document.getElementById('stepsSlider'),
+        variability: document.getElementById('variabilitySlider')
+    };
+    const values = {
+        fluxGuidance: document.getElementById('fluxGuidanceValue'),
+        fuerzaSanJuan: document.getElementById('fuerzaSanJuanValue'),
+        fuerzaSolarpunk: document.getElementById('fuerzaSolarpunkValue'),
+        steps: document.getElementById('stepsValue'),
+        variability: document.getElementById('variabilityValue')
+    };
+
+    // Cargar configuración guardada
+    loadConfigFromStorage();
+
+    // Hotkey para mostrar/ocultar panel (P)
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'P' || e.key === 'p') {
+            e.preventDefault();
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+    });
+
+    // Event listeners para sliders
+    Object.keys(sliders).forEach(key => {
+        sliders[key].addEventListener('input', () => {
+            const value = key === 'steps' ? parseInt(sliders[key].value) : parseFloat(sliders[key].value);
+            values[key].textContent = key === 'steps' ? value : value.toFixed(2);
+            
+            // Actualizar CONFIG en tiempo real
+            if (key === 'fluxGuidance') CONFIG.imageGeneration.fluxGuidance = value;
+            else if (key === 'fuerzaSanJuan') CONFIG.imageGeneration.fuerzaSanJuan = value;
+            else if (key === 'fuerzaSolarpunk') CONFIG.imageGeneration.fuerzaSolarpunk = value;
+            else if (key === 'steps') CONFIG.imageGeneration.steps = value;
+            else if (key === 'variability') CONFIG.imageGeneration.variabilityFactor = value;
+            
+            saveConfigToStorage();
+        });
+    });
+
+    // Botón resetear
+    document.getElementById('resetConfigBtn').addEventListener('click', () => {
+        CONFIG.imageGeneration = {
+            fluxGuidance: 3.5,
+            fuerzaSanJuan: 0.55,
+            fuerzaSolarpunk: 0.8,
+            steps: 20,
+            variabilityFactor: 0.15
+        };
+        updateSlidersFromConfig();
+        saveConfigToStorage();
+    });
+
+    // Botón guardar
+    document.getElementById('saveConfigBtn').addEventListener('click', () => {
+        saveConfigToStorage();
+        console.log('✅ Configuración guardada');
+    });
+
+    function updateSlidersFromConfig() {
+        sliders.fluxGuidance.value = CONFIG.imageGeneration.fluxGuidance;
+        sliders.fuerzaSanJuan.value = CONFIG.imageGeneration.fuerzaSanJuan;
+        sliders.fuerzaSolarpunk.value = CONFIG.imageGeneration.fuerzaSolarpunk;
+        sliders.steps.value = CONFIG.imageGeneration.steps;
+        sliders.variability.value = CONFIG.imageGeneration.variabilityFactor;
+
+        values.fluxGuidance.textContent = CONFIG.imageGeneration.fluxGuidance.toFixed(1);
+        values.fuerzaSanJuan.textContent = CONFIG.imageGeneration.fuerzaSanJuan.toFixed(2);
+        values.fuerzaSolarpunk.textContent = CONFIG.imageGeneration.fuerzaSolarpunk.toFixed(2);
+        values.steps.textContent = CONFIG.imageGeneration.steps;
+        values.variability.textContent = CONFIG.imageGeneration.variabilityFactor.toFixed(2);
+    }
+
+    function saveConfigToStorage() {
+        try {
+            localStorage.setItem('avatar_config', JSON.stringify(CONFIG.imageGeneration));
+        } catch (e) {
+            console.warn('No se pudo guardar configuración:', e);
+        }
+    }
+
+    function loadConfigFromStorage() {
+        try {
+            const saved = localStorage.getItem('avatar_config');
+            if (saved) {
+                const savedConfig = JSON.parse(saved);
+                Object.assign(CONFIG.imageGeneration, savedConfig);
+                updateSlidersFromConfig();
+            }
+        } catch (e) {
+            console.warn('No se pudo cargar configuración:', e);
+        }
+    }
+}
+
+// Integrar mega algoritmo con pantalla3
+function generateImageFromUserSelections() {
+    // Obtener selecciones del usuario desde localStorage
+    const userSelections = JSON.parse(localStorage.getItem('userSelections') || '{}');
+    
+    if (Object.keys(userSelections).length === 0) {
+        console.warn('⚠️ No hay selecciones de usuario para generar imagen');
+        return;
+    }
+
+    // Crear instancia del mega generador
+    const megaGenerator = new MegaPromptGenerator();
+    
+    // Generar prompt desde selecciones
+    const promptData = megaGenerator.generateFromUserSelections(userSelections);
+    
+    console.log('🎨 Generando imagen con mega algoritmo:', promptData);
+    
+    // Enviar al servidor para generar imagen
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        const seed = Math.floor(Math.random() * 18446744073709551614) + 1;
+        
+        const message = {
+            type: 'generarImagen',
+            prompt: promptData.prompt,
+            negativePrompt: promptData.negativePrompt,
+            params: {
+                seed: seed,
+                steps: promptData.steps,
+                width: 1184,
+                height: 1184,
+                model: 'flux1-dev-fp8.safetensors',
+                guidance: promptData.guidance,
+                loras: [
+                    {
+                        name: 'Flux_SanJuanv1.safetensors',
+                        strength: promptData.sanJuanStrength
+                    },
+                    {
+                        name: 'Solarpunk style v1-step00001900.safetensors',
+                        strength: promptData.solarStrength
+                    }
+                ]
+            }
+        };
+
+        console.log('📤 Enviando mensaje de generación:', message);
+        ws.send(JSON.stringify(message));
+    } else {
+        console.error('❌ WebSocket no conectado');
+    }
+}
+
 // Iniciar conexión al cargar
 window.addEventListener('load', () => {
     connectWebSocket();
     loadExistingImages();
     initSecretPanel(); // Inicializar panel secreto
     initVideoStuckDetector(); // Inicializar detector automático
+    initConfigPanel(); // Inicializar panel de configuración
     
     // Activar audio al hacer click en cualquier parte
     document.body.addEventListener('click', enableAudio, { once: true });
