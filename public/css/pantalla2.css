@@ -168,7 +168,7 @@
     position: relative;
     width: 90%;
     max-width: 820px;
-    margin: 20vh auto 0;
+    margin: 15vh auto 0;
     height: 107px;
     box-sizing: border-box;
     opacity: 0;
@@ -341,7 +341,7 @@
 .keyboard-container {
     width: 90%;
     max-width: 800px;
-    margin: 80px auto 40px;
+    margin: 120px auto 40px;
     opacity: 0;
     animation: fadeInUp 0.8s ease-out 2.8s forwards;
 }
@@ -448,82 +448,427 @@
     font-size: 16px !important;
 }
 
-/* Responsive */
-@media screen and (max-width: 1080px) {
+/* Responsive - Mantener diseño perfecto en 1080x1920 */
+
+/* Resoluciones grandes (Desktop) */
+@media screen and (min-width: 1921px) {
     .title-container {
-        margin-bottom: 20vh;
-        padding-top: 15px;
+        margin-bottom: 8vh;
+        padding: 30px 40px 0;
+    }
+    
+    .objective-container {
+        max-width: 1200px;
+        min-height: 400px;
+    }
+    
+    .bracket-left img,
+    .bracket-right img {
+        height: 350px;
+    }
+    
+    .gradient-bg {
+        height: 350px;
+    }
+    
+    .text-content {
+        max-width: 850px;
+        padding: 80px 0 70px 0;
+    }
+    
+    .typing-text {
+        font-size: 28px;
+    }
+    
+    .input-container {
+        max-width: 950px;
+        margin: 22vh auto 0;
+    }
+    
+    .name-input {
+        font-size: 24px;
+    }
+    
+    .keyboard-container {
+        max-width: 900px;
+        margin: 130px auto 50px;
+    }
+}
+
+/* Resoluciones medianas-grandes (1440p, 1600p) */
+@media screen and (max-width: 1920px) and (min-width: 1441px) {
+    .title-container {
+        margin-bottom: 7vh;
+        padding: 25px 40px 0;
+    }
+    
+    .objective-container {
+        max-width: 1000px;
+        min-height: 380px;
+    }
+    
+    .bracket-left img,
+    .bracket-right img {
+        height: 320px;
+    }
+    
+    .gradient-bg {
+        height: 320px;
+    }
+    
+    .text-content {
+        max-width: 800px;
+        padding: 75px 0 65px 0;
+    }
+    
+    .typing-text {
+        font-size: 26px;
+    }
+    
+    .input-container {
+        max-width: 900px;
+        margin: 20vh auto 0;
+    }
+    
+    .name-input {
+        font-size: 23px;
+    }
+}
+
+/* Resoluciones medianas (1080p-1440p) */
+@media screen and (max-width: 1440px) and (min-width: 1081px) {
+    .title-container {
+        margin-bottom: 6vh;
+        padding: 20px 40px 0;
+    }
+    
+    .objective-container {
+        width: 92%;
+        min-height: 320px;
+    }
+    
+    .bracket-left img,
+    .bracket-right img {
+        height: 280px;
+    }
+    
+    .gradient-bg {
+        height: 280px;
+    }
+    
+    .text-content {
+        padding: 65px 0 55px 0;
+        max-width: 700px;
+    }
+    
+    .typing-text {
+        font-size: 24px;
+    }
+    
+    .input-container {
+        margin: 14vh auto 0;
+        width: 92%;
+    }
+    
+    .name-input {
+        font-size: 21px;
+        padding: 0 28px;
+    }
+    
+    .keyboard-container {
+        margin: 110px auto 35px;
+    }
+}
+
+/* Tablets y laptops pequeños */
+@media screen and (max-width: 1080px) and (min-width: 769px) {
+    .title-container {
+        margin-bottom: 5vh;
+        padding: 15px 30px 0;
     }
     
     .objective-container {
         width: 95%;
-        min-height: 250px;
+        min-height: 280px;
     }
     
     .bracket-left img,
     .bracket-right img {
-        height: calc(300px * 0.7);
+        height: 240px;
     }
     
     .gradient-bg {
-        height: calc(300px * 0.7);
+        height: 240px;
     }
     
     .text-content {
-        padding: 60px 0 50px 0;
-        max-width: 650px;
+        padding: 55px 0 45px 0;
+        max-width: 600px;
     }
     
-    .typing-text,
-    .cursor {
-        font-size: calc(25px * (100vw / 1080));
+    .typing-text {
+        font-size: 20px;
     }
     
     .input-container {
-        margin: 15vh auto 0;
-        width: 95%;
+        margin: 16vh auto 0;
+        width: 96%;
+        height: 90px;
     }
     
     .name-input {
-        font-size: 30px;
+        font-size: 19px;
         padding: 0 25px;
     }
     
     .keyboard-container {
-        margin: 60px auto 30px;
+        margin: 100px auto 30px;
+        width: 95%;
+    }
+    
+    .neon-keyboard .hg-button {
+        height: 60px !important;
+        font-size: 18px !important;
     }
 }
 
-@media screen and (max-width: 768px) {
+/* Tablets */
+@media screen and (max-width: 768px) and (min-width: 481px) {
     .title-container {
-        margin-bottom: 5vh;
-        padding-top: 10px;
+        margin-bottom: 4vh;
+        padding: 12px 25px 0;
+    }
+    
+    .objective-container {
+        width: 96%;
+        min-height: 220px;
     }
     
     .bracket-left img,
     .bracket-right img {
-        height: calc(300px * 0.5);
+        height: 180px;
     }
     
     .gradient-bg {
-        height: calc(300px * 0.5);
+        height: 180px;
     }
     
     .text-content {
-        padding: 45px 0 35px 0;
-        max-width: 550px;
+        padding: 40px 0 30px 0;
+        max-width: 500px;
+    }
+    
+    .typing-text {
+        font-size: 18px;
+        line-height: 1.5;
     }
     
     .input-container {
-        margin: 12vh auto 0;
+        margin: 14vh auto 0;
+        width: 96%;
+        height: 90px;
+    }
+    
+    .input-rectangle {
+        width: calc(100% - 80px);
+        height: 80px;
+    }
+    
+    .input-rectangle img {
+        width: 100%;
+        height: 100%;
     }
     
     .name-input {
         font-size: 16px;
         padding: 0 20px;
+        width: calc(100% - 80px);
+        height: 80px;
+    }
+    
+    .submit-button {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .input-bar {
+        top: 80px;
+        width: 240px;
     }
     
     .keyboard-container {
-        margin: 40px auto 20px;
+        margin: 80px auto 20px;
+        width: 96%;
+    }
+    
+    .neon-keyboard .hg-button {
+        height: 55px !important;
+        font-size: 16px !important;
+        min-width: 45px !important;
+    }
+    
+    .neon-keyboard .hg-row {
+        margin-bottom: 25px;
+        gap: 8px;
+    }
+}
+
+/* Móviles */
+@media screen and (max-width: 480px) {
+    .title-container {
+        margin-bottom: 3vh;
+        padding: 10px 20px 0;
+    }
+    
+    .objective-container {
+        width: 98%;
+        min-height: 180px;
+    }
+    
+    .bracket-left img,
+    .bracket-right img {
+        height: 140px;
+    }
+    
+    .gradient-bg {
+        height: 140px;
+    }
+    
+    .text-content {
+        padding: 30px 0 25px 0;
+        max-width: 400px;
+    }
+    
+    .typing-text {
+        font-size: 16px;
+        line-height: 1.4;
+    }
+    
+    .input-container {
+        margin: 8vh auto 0;
+        width: 98%;
+        height: 75px;
+    }
+    
+    .input-rectangle {
+        width: calc(100% - 70px);
+        height: 70px;
+    }
+    
+    .name-input {
+        font-size: 14px;
+        padding: 0 18px;
+        width: calc(100% - 70px);
+        height: 70px;
+    }
+    
+    .submit-button {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .input-bar {
+        top: 70px;
+        width: 200px;
+        left: 20px;
+    }
+    
+    .keyboard-container {
+        margin: 70px auto 15px;
+        width: 98%;
+    }
+    
+    .neon-keyboard .hg-button {
+        height: 45px !important;
+        font-size: 14px !important;
+        min-width: 35px !important;
+    }
+    
+    .neon-keyboard .hg-row {
+        margin-bottom: 20px;
+        gap: 6px;
+    }
+    
+    .neon-keyboard .hg-button-bksp,
+    .neon-keyboard .hg-button-enter,
+    .neon-keyboard .hg-button-shift {
+        min-width: 70px !important;
+        font-size: 12px !important;
+    }
+    
+    .neon-keyboard .hg-button-space {
+        min-width: 200px !important;
+    }
+}
+
+/* Móviles muy pequeños */
+@media screen and (max-width: 360px) {
+    .title-container {
+        margin-bottom: 2vh;
+        padding: 8px 15px 0;
+    }
+    
+    .objective-container {
+        min-height: 150px;
+    }
+    
+    .bracket-left img,
+    .bracket-right img {
+        height: 120px;
+    }
+    
+    .gradient-bg {
+        height: 120px;
+    }
+    
+    .text-content {
+        padding: 25px 0 20px 0;
+        max-width: 320px;
+    }
+    
+    .typing-text {
+        font-size: 14px;
+    }
+    
+    .input-container {
+        margin: 6vh auto 0;
+        height: 65px;
+    }
+    
+    .input-rectangle {
+        width: calc(100% - 60px);
+        height: 60px;
+    }
+    
+    .name-input {
+        font-size: 13px;
+        padding: 0 15px;
+        width: calc(100% - 60px);
+        height: 60px;
+    }
+    
+    .submit-button {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .input-bar {
+        top: 60px;
+        width: 160px;
+        left: 15px;
+    }
+    
+    .keyboard-container {
+        margin: 60px auto 10px;
+    }
+    
+    .neon-keyboard .hg-button {
+        height: 40px !important;
+        font-size: 12px !important;
+        min-width: 30px !important;
+    }
+    
+    .neon-keyboard .hg-button-space {
+        min-width: 150px !important;
     }
 }

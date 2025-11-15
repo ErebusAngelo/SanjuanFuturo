@@ -92,44 +92,145 @@
     }
 }
 
-/* Responsive */
-@media screen and (max-width: 1080px) {
+/* Responsive - Mantener diseño perfecto en 1080x1920 */
+
+/* Resoluciones grandes (Desktop) */
+@media screen and (min-width: 1921px) {
     .page-header {
-        padding: 5% 100px 35px;
+        padding: 10% 60px 50px;
     }
     
     .header-left .text-subtitle {
-        font-size: 18px;
+        font-size: 22px;
     }
     
     .header-left .text-title {
-        font-size: 47px;
+        font-size: 52px;
     }
     
     .user-name {
-        font-size: 30px;
+        font-size: 36px;
     }
     
     .user-icon svg {
-        width: 50px;
-        height: 50px;
+        width: 60px;
+        height: 60px;
     }
 }
 
-@media screen and (max-width: 768px) {
+/* Resoluciones medianas-grandes (1440p, 1600p) */
+@media screen and (max-width: 1920px) and (min-width: 1441px) {
     .page-header {
-        padding: 6% 30px 25px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 20px;
+        padding: 9% 55px 45px;
     }
     
     .header-left .text-subtitle {
-        font-size: 16px;
+        font-size: 21px;
     }
     
     .header-left .text-title {
-        font-size: 32px;
+        font-size: 50px;
+    }
+    
+    .user-name {
+        font-size: 34px;
+    }
+    
+    .user-icon svg {
+        width: 58px;
+        height: 58px;
+    }
+}
+
+/* Resoluciones medianas (1080p-1440p) */
+@media screen and (max-width: 1440px) and (min-width: 1081px) {
+    .page-header {
+        padding: 7% 50px 40px;
+    }
+    
+    .header-left .text-subtitle {
+        font-size: 19px;
+    }
+    
+    .header-left .text-title {
+        font-size: 46px;
+    }
+    
+    .user-name {
+        font-size: 31px;
+    }
+    
+    .user-icon svg {
+        width: 53px;
+        height: 53px;
+    }
+}
+
+/* Tablets y laptops pequeños */
+@media screen and (max-width: 1080px) and (min-width: 769px) {
+    .page-header {
+        padding: 6% 45px 35px;
+    }
+    
+    .header-left .text-subtitle {
+        font-size: 17px;
+    }
+    
+    .header-left .text-title {
+        font-size: 42px;
+    }
+    
+    .user-name {
+        font-size: 28px;
+    }
+    
+    .user-icon svg {
+        width: 48px;
+        height: 48px;
+    }
+}
+
+/* Tablets */
+@media screen and (max-width: 768px) and (min-width: 481px) {
+    .page-header {
+        padding: 5% 35px 30px;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    
+    .header-left .text-subtitle {
+        font-size: 15px;
+    }
+    
+    .header-left .text-title {
+        font-size: 36px;
+    }
+    
+    .user-name {
+        font-size: 22px;
+    }
+    
+    .user-icon svg {
+        width: 44px;
+        height: 44px;
+    }
+}
+
+/* Móviles */
+@media screen and (max-width: 480px) {
+    .page-header {
+        padding: 4% 25px 25px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .header-left .text-subtitle {
+        font-size: 13px;
+    }
+    
+    .header-left .text-title {
+        font-size: 30px;
     }
     
     .header-right {
@@ -141,22 +242,24 @@
     }
     
     .user-icon svg {
-        width: 45px;
-        height: 45px;
+        width: 40px;
+        height: 40px;
     }
 }
 
-@media screen and (max-width: 480px) {
+/* Móviles muy pequeños */
+@media screen and (max-width: 360px) {
     .page-header {
-        padding: 5% 20px 20px;
+        padding: 3% 20px 20px;
+        gap: 12px;
     }
     
     .header-left .text-subtitle {
-        font-size: 14px;
+        font-size: 12px;
     }
     
     .header-left .text-title {
-        font-size: 28px;
+        font-size: 26px;
     }
     
     .user-name {
@@ -164,8 +267,8 @@
     }
     
     .user-icon svg {
-        width: 40px;
-        height: 40px;
+        width: 36px;
+        height: 36px;
     }
 }
 
@@ -174,12 +277,12 @@
     position: relative;
     width: 90%;
     max-width: 912px;
-    margin: 80px auto 0;
+    margin: 60px auto 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 40px 0;
+    padding: 20px 0;
 }
 
 /* Contenedor del label */
@@ -276,7 +379,7 @@
     justify-content: center;
     align-items: center;
     gap: 30px;
-    margin-top: 50px;
+    margin-top: 40px;
     opacity: 0;
     animation: fadeInUp 0.8s ease-out 1.4s forwards;
 }
@@ -336,7 +439,7 @@
 
 /* Contenedor de la elipse */
 .ellipse-container {
-    margin-top: 5%;
+    margin-top: 30px;
     width: 100%;
     max-width: 650px;
     display: flex;
@@ -386,73 +489,245 @@
     }
 }
 
-/* Responsive */
-@media screen and (max-width: 1080px) {
+/* Responsive para sección de oportunidades */
+
+/* Resoluciones grandes (Desktop) */
+@media screen and (min-width: 1921px) {
     .opportunities-section {
-        margin-top: 180px;
+        margin-top: 80px;
+        max-width: 1100px;
     }
     
     .opportunities-container {
-        width: 90%;
-        height: 100px;
+        width: 1000px;
+        height: 140px;
     }
     
     .opportunities-text {
-        font-size: 38px;
-        letter-spacing: 6px;
+        font-size: 34px;
+        letter-spacing: 10px;
     }
     
     .opportunities-bar {
-        width: 400px;
+        width: 320px;
     }
     
     .category-indicators {
-        gap: 25px;
+        gap: 35px;
         margin-top: 45px;
     }
     
     .indicator {
-        width: 60px;
-        height: 60px;
-    }
-    
-    .indicator span {
-        font-size: 28px;
-    }
-    
-    .ellipse-container {
-        margin-top: 5%;
-        max-width: 550px;
-    }
-}
-
-@media screen and (max-width: 768px) {
-    .opportunities-section {
-        margin-top: 50px;
-        padding: 30px 0;
-    }
-    
-    .opportunities-container {
+        width: 80px;
         height: 80px;
     }
     
+    .indicator span {
+        font-size: 36px;
+    }
+    
+    .ellipse-container {
+        margin-top: 35px;
+        max-width: 750px;
+    }
+}
+
+/* Resoluciones medianas-grandes (1440p, 1600p) */
+@media screen and (max-width: 1920px) and (min-width: 1441px) {
+    .opportunities-section {
+        margin-top: 70px;
+        max-width: 1000px;
+    }
+    
+    .opportunities-container {
+        width: 950px;
+        height: 130px;
+    }
+    
     .opportunities-text {
-        font-size: 30px;
-        letter-spacing: 4px;
+        font-size: 32px;
+        letter-spacing: 9px;
     }
     
     .opportunities-bar {
-        width: 200px;
+        width: 300px;
     }
     
     .category-indicators {
-        gap: 20px;
+        gap: 32px;
+        margin-top: 42px;
+    }
+    
+    .indicator {
+        width: 75px;
+        height: 75px;
+    }
+    
+    .indicator span {
+        font-size: 34px;
+    }
+    
+    .ellipse-container {
+        margin-top: 32px;
+        max-width: 700px;
+    }
+}
+
+/* Resoluciones medianas (1080p-1440p) */
+@media screen and (max-width: 1440px) and (min-width: 1081px) {
+    .opportunities-section {
+        margin-top: 65px;
+        max-width: 950px;
+    }
+    
+    .opportunities-container {
+        width: 920px;
+        height: 125px;
+    }
+    
+    .opportunities-text {
+        font-size: 31px;
+        letter-spacing: 8px;
+    }
+    
+    .opportunities-bar {
+        width: 290px;
+    }
+    
+    .category-indicators {
+        gap: 28px;
+        margin-top: 38px;
+    }
+    
+    .indicator {
+        width: 72px;
+        height: 72px;
+    }
+    
+    .indicator span {
+        font-size: 33px;
+    }
+    
+    .ellipse-container {
+        margin-top: 30px;
+        max-width: 680px;
+    }
+}
+
+/* Tablets y laptops pequeños */
+@media screen and (max-width: 1080px) and (min-width: 769px) {
+    .opportunities-section {
+        margin-top: 50px;
+        width: 92%;
+    }
+    
+    .opportunities-container {
+        width: 85%;
+        height: 110px;
+    }
+    
+    .opportunities-text {
+        font-size: 28px;
+        letter-spacing: 7px;
+    }
+    
+    .opportunities-bar {
+        width: 260px;
+    }
+    
+    .category-indicators {
+        gap: 25px;
         margin-top: 35px;
     }
     
     .indicator {
-        width: 55px;
-        height: 55px;
+        width: 65px;
+        height: 65px;
+    }
+    
+    .indicator span {
+        font-size: 30px;
+    }
+    
+    .ellipse-container {
+        margin-top: 28px;
+        max-width: 580px;
+    }
+}
+
+/* Tablets */
+@media screen and (max-width: 768px) and (min-width: 481px) {
+    .opportunities-section {
+        margin-top: 45px;
+        padding: 25px 0;
+        width: 94%;
+    }
+    
+    .opportunities-container {
+        width: 90%;
+        height: 95px;
+    }
+    
+    .opportunities-text {
+        font-size: 26px;
+        letter-spacing: 5px;
+    }
+    
+    .opportunities-bar {
+        width: 220px;
+    }
+    
+    .category-indicators {
+        gap: 22px;
+        margin-top: 30px;
+    }
+    
+    .indicator {
+        width: 58px;
+        height: 58px;
+    }
+    
+    .indicator span {
+        font-size: 26px;
+    }
+    
+    .ellipse-container {
+        margin-top: 25px;
+        max-width: 480px;
+    }
+}
+
+/* Móviles */
+@media screen and (max-width: 480px) {
+    .opportunities-section {
+        margin-top: 35px;
+        padding: 20px 0;
+        width: 96%;
+    }
+    
+    .opportunities-container {
+        width: 95%;
+        height: 80px;
+    }
+    
+    .opportunities-text {
+        font-size: 22px;
+        letter-spacing: 4px;
+    }
+    
+    .opportunities-bar {
+        width: 180px;
+    }
+    
+    .category-indicators {
+        gap: 18px;
+        margin-top: 25px;
+    }
+    
+    .indicator {
+        width: 52px;
+        height: 52px;
+        border-width: 3px;
     }
     
     .indicator span {
@@ -460,39 +735,42 @@
     }
     
     .ellipse-container {
-        margin-top: 5%;
-        max-width: 450px;
+        margin-top: 22px;
+        max-width: 380px;
     }
 }
 
-@media screen and (max-width: 480px) {
+/* Móviles muy pequeños */
+@media screen and (max-width: 360px) {
     .opportunities-section {
-        margin-top: 40px;
-        padding: 20px 0;
+        margin-top: 25px;
+        padding: 15px 0;
+        width: 98%;
     }
     
     .opportunities-container {
+        width: 98%;
         height: 70px;
     }
     
     .opportunities-text {
-        font-size: 24px;
+        font-size: 20px;
         letter-spacing: 3px;
     }
     
     .opportunities-bar {
-        width: 160px;
+        width: 150px;
     }
     
     .category-indicators {
         gap: 15px;
-        margin-top: 30px;
+        margin-top: 20px;
     }
     
     .indicator {
-        width: 50px;
-        height: 50px;
-        border-width: 3px;
+        width: 48px;
+        height: 48px;
+        border-width: 2.5px;
     }
     
     .indicator span {
@@ -500,8 +778,8 @@
     }
     
     .ellipse-container {
-        margin-top: 5%;
-        max-width: 350px;
+        margin-top: 18px;
+        max-width: 320px;
     }
 }
 
@@ -717,58 +995,127 @@
 }
 
 /* Responsive para opciones */
-@media screen and (max-width: 1080px) {
+
+/* Resoluciones grandes (Desktop) */
+@media screen and (min-width: 1921px) {
     .files-container {
-        margin-top: 50px;
-        max-width: 950px;
+        margin-top: 30px;
+        max-width: 1200px;
+    }
+    
+    .category-options {
+        gap: 25px 2%;
+        padding: 0 2%;
+    }
+    
+    .option-item {
+        padding: 24px 32px;
+        min-height: 90px;
+    }
+    
+    .option-circle {
+        width: 50px;
+        height: 50px;
+        min-width: 50px;
+    }
+    
+    .option-text {
+        font-size: 20px;
+    }
+    
+    .drag-instruction {
+        font-size: 36px;
+        margin: 60px 0;
+    }
+}
+
+/* Resoluciones medianas-grandes (1440p, 1600p) */
+@media screen and (max-width: 1920px) and (min-width: 1441px) {
+    .files-container {
+        margin-top: 25px;
+        max-width: 1150px;
+    }
+    
+    .category-options {
+        gap: 22px 2%;
+        padding: 0 2.5%;
+    }
+    
+    .option-item {
+        padding: 22px 30px;
+        min-height: 85px;
+    }
+    
+    .option-circle {
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+    }
+    
+    .option-text {
+        font-size: 19px;
+    }
+    
+    .drag-instruction {
+        font-size: 34px;
+        margin: 55px 0;
+    }
+}
+
+/* Resoluciones medianas (1080p-1440p) */
+@media screen and (max-width: 1440px) and (min-width: 1081px) {
+    .files-container {
+        margin-top: 22px;
+        max-width: 1050px;
+    }
+    
+    .category-options {
+        gap: 20px 2.5%;
+        padding: 0 3%;
+    }
+    
+    .option-item {
+        padding: 21px 28px;
+        min-height: 82px;
+    }
+    
+    .option-circle {
+        width: 46px;
+        height: 46px;
+        min-width: 46px;
+    }
+    
+    .option-text {
+        font-size: 18.5px;
+    }
+    
+    .drag-instruction {
+        font-size: 33px;
+        margin: 52px 0;
+    }
+}
+
+/* Tablets y laptops pequeños */
+@media screen and (max-width: 1080px) and (min-width: 769px) {
+    .files-container {
+        margin-top: 45px;
+        max-width: 95%;
     }
     
     .category-options {
         gap: 18px 3%;
-        padding: 0 4%;
+        padding: 0 3.5%;
     }
     
     .option-item {
-        padding: 18px 24px;
-        min-height: 75px;
+        padding: 19px 26px;
+        min-height: 78px;
     }
     
     .option-circle {
-        width: 42px;
-        height: 42px;
-        min-width: 42px;
-    }
-    
-    .option-text {
-        font-size: 22px;
-    }
-    
-    .drag-instruction {
-        font-size: 31px;
-    }
-}
-
-@media screen and (max-width: 768px) {
-    .files-container {
-        margin-top: 40px;
-        max-width: 90%;
-    }
-    
-    .category-options {
-        grid-template-columns: 1fr;
-        gap: 15px;
-        padding: 0 5%;
-    }
-    
-    .option-item {
-        padding: 16px 20px;
-        min-height: 70px;
-    }
-    
-    .option-circle {
-        width: 38px;
-        height: 38px;
-        min-width: 38px;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
     }
     
     .option-text {
@@ -776,31 +1123,68 @@
     }
     
     .drag-instruction {
-        font-size: 20px;
+        font-size: 30px;
+        margin: 48px 0;
     }
 }
 
-@media screen and (max-width: 480px) {
+/* Tablets */
+@media screen and (max-width: 768px) and (min-width: 481px) {
     .files-container {
-        margin-top: 35px;
-        max-width: 95%;
+        margin-top: 40px;
+        max-width: 92%;
     }
     
     .category-options {
-        gap: 12px;
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 0 4%;
+    }
+    
+    .option-item {
+        padding: 17px 22px;
+        min-height: 72px;
+    }
+    
+    .option-circle {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+    }
+    
+    .option-text {
+        font-size: 17px;
+    }
+    
+    .drag-instruction {
+        font-size: 24px;
+        margin: 45px 0;
+    }
+}
+
+/* Móviles */
+@media screen and (max-width: 480px) {
+    .files-container {
+        margin-top: 35px;
+        max-width: 96%;
+    }
+    
+    .category-options {
+        grid-template-columns: 1fr;
+        gap: 14px;
         padding: 0 3%;
     }
     
     .option-item {
-        padding: 14px 18px;
+        padding: 15px 20px;
         gap: 12px;
-        min-height: 65px;
+        min-height: 68px;
     }
     
     .option-circle {
-        width: 35px;
-        height: 35px;
-        min-width: 35px;
+        width: 37px;
+        height: 37px;
+        min-width: 37px;
         border-width: 2.5px;
     }
     
@@ -809,12 +1193,53 @@
     }
     
     .dragged-circle {
-        width: 40px;
-        height: 40px;
+        width: 42px;
+        height: 42px;
+    }
+    
+    .drag-instruction {
+        font-size: 20px;
+        margin: 40px 0;
+    }
+}
+
+/* Móviles muy pequeños */
+@media screen and (max-width: 360px) {
+    .files-container {
+        margin-top: 30px;
+        max-width: 98%;
+    }
+    
+    .category-options {
+        gap: 12px;
+        padding: 0 2%;
+    }
+    
+    .option-item {
+        padding: 13px 18px;
+        gap: 10px;
+        min-height: 62px;
+    }
+    
+    .option-circle {
+        width: 34px;
+        height: 34px;
+        min-width: 34px;
+        border-width: 2px;
+    }
+    
+    .option-text {
+        font-size: 15px;
+    }
+    
+    .dragged-circle {
+        width: 38px;
+        height: 38px;
     }
     
     .drag-instruction {
         font-size: 18px;
+        margin: 35px 0;
     }
 }
 

@@ -239,8 +239,8 @@ if (submitButton) {
                 }));
             }
             
-            // Redirigir a pantalla3 con el ID del jugador
-            window.location.href = `pantalla3.html?jugador=${playerId}`;
+            // Redirigir a pantalla3 con el ID del jugador y shader activado
+            window.location.href = `pantalla3.html?jugador=${playerId}&shader=true`;
         } else {
             // Opcional: mostrar un mensaje de error o advertencia
             console.log('Por favor ingresa tu nombre');
