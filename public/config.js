@@ -10,8 +10,8 @@ const CONFIG = {
     
     // Avatar.html - Imagen generada (carta legendaria)
     generatedImage: {
-        maxWidth: '200px',         // Tamaño máximo de la imagen generada
-        maxHeight: '200px',
+        maxWidth: '100px',         // Tamaño máximo de la imagen generada
+        maxHeight: '100px',
         glowColor: '#00D4FF',      // Color del glow (celeste principal)
         glowIntensity: '30px',     // Intensidad del glow
         animationDuration: '1.5s'  // Duración de la animación de reveal

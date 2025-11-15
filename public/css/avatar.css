@@ -1,0 +1,344 @@
+ @font-face {
+            font-family: 'Roboto';
+            src: url('fonts/Roboto-Light.ttf') format('truetype');
+            font-weight: 300;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Arkitech';
+            src: url('fonts/Arkitech Medium.ttf') format('truetype');
+            font-weight: 500;
+            font-style: normal;
+        }
+    
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            overflow: hidden;
+            font-family: 'Arkitech', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* Canvas de fondo para background.js - SIEMPRE VISIBLE */
+        #p5Canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .led-screen {
+            width: 1080px;
+            height: 1080px;
+            max-width: 95vw;
+            max-height: 95vh;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+            overflow: visible;
+        }
+
+        /* Marco circular principal - SIEMPRE VISIBLE */
+        .main-circle-frame {
+            position: relative;
+            width: 700px;
+            height: 700px;
+            padding: 30px;
+        }
+
+        .rotating-arc {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            animation: rotateClockwise 3s linear infinite;
+            z-index: 2;
+        }
+
+        .content-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 75%;
+            height: 75%;
+            border-radius: 50%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+        }
+
+        /* Contenido del video */
+        .video-content {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        .video-content.active {
+            display: block;
+        }
+
+        .video-content video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        /* Contenido de loading */
+        .loading-content {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #00D4FF;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-23%,-50%);
+        }
+
+        .loading-content.active {
+            display: flex;
+        }
+
+        .loading-content h2 {
+            font-size: 2rem;
+            animation: pulse 1.5s ease-in-out infinite;
+            margin: 0;
+            padding: 0;
+            line-height: 1.3;
+        }
+
+        /* Contenido de imagen generada */
+        .image-content {
+            display: none;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-content.active {
+            display: flex;
+        }
+
+        .image-content img {
+            max-width: 400px;
+            max-height: 400px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            animation: legendaryReveal 1.5s ease-out;
+            filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.8));
+        }
+
+        @keyframes legendaryReveal {
+            0% {
+                transform: scale(0.3) rotate(-10deg);
+                opacity: 0;
+                filter: drop-shadow(0 0 40px rgba(0, 212, 255, 1)) brightness(2);
+            }
+            50% {
+                transform: scale(1.1) rotate(5deg);
+                filter: drop-shadow(0 0 35px rgba(0, 212, 255, 0.9)) brightness(1.5);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+                filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.8));
+            }
+        }
+
+        /* Contenido de agradecimiento */
+        .thanks-content {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #00D4FF;
+        }
+
+        .thanks-content.active {
+            display: flex;
+        }
+
+        .thanks-content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        .thanks-content p {
+            font-size: 1.5rem;
+        }
+
+        @keyframes rotateClockwise {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes rotateCounterClockwise {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
+        }
+
+        /* Contenido de galería */
+        .gallery-content {
+            display: none;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            padding: 10px;
+        }
+
+        .gallery-content.active {
+            display: block;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .gallery-item {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #00D4FF;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Barra de progreso circular */
+        .progress-arc {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            display: none;
+            z-index: 3;
+        }
+
+        .progress-arc.active {
+            display: block;
+        }
+
+        .progress-arc circle {
+            fill: none;
+            stroke: #00D4FF;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transform-origin: center;
+            transform: rotate(-90deg);
+            transition: stroke-dashoffset 0.3s ease;
+            filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.8));
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                text-shadow: 0 0 20px #00D4FF, 0 0 40px #00D4FF, 0 0 60px #00D4FF;
+            }
+            50% {
+                text-shadow: 0 0 40px #00D4FF, 0 0 80px #00D4FF, 0 0 120px #00D4FF;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Indicador de conexión */
+        .connection-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ff0000;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .connection-indicator.connected {
+            background: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+        }
+
+        /* Responsive: mantener aspecto cuadrado */
+        @media (max-width: 1080px) {
+            .led-screen {
+                width: 100vw;
+                height: 100vw;
+            }
+        }
+
+        @media (max-height: 1080px) and (min-aspect-ratio: 1/1) {
+            .led-screen {
+                width: 100vh;
+                height: 100vh;
+            }
+        }
