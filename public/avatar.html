@@ -34,10 +34,24 @@
                 <label>Variabilidad: <span id="variabilityValue">0.15</span></label>
                 <input type="range" id="variabilitySlider" min="0.05" max="0.3" step="0.05" value="0.15">
             </div>
+            
+            <!-- Separador visual -->
+            <hr style="border: 1px solid rgba(0, 212, 255, 0.3); margin: 15px 0;">
+            
+            <!-- Controles de Galería -->
+            <div class="config-group">
+                <label>Tiempo Galería (seg): <span id="galleryDurationValue">15</span></label>
+                <input type="range" id="galleryDurationSlider" min="5" max="60" step="5" value="15">
+            </div>
+            <div class="config-group">
+                <label>Tiempo Imagen (seg): <span id="imageDurationValue">5</span></label>
+                <input type="range" id="imageDurationSlider" min="3" max="30" step="1" value="5">
+            </div>
         </div>
         <div class="config-actions">
             <button id="resetConfigBtn">🔄 Resetear</button>
             <button id="saveConfigBtn">💾 Guardar</button>
+            <button id="testGalleryBtn">🖼️ Test Galería</button>
         </div>
         <div class="config-hotkey">Presiona P para ocultar</div>
     </div>

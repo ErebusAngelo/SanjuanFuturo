@@ -104,10 +104,15 @@ function changeState(newState, data = {}) {
             // Mostrar galería
             document.getElementById('galleryContent').classList.add('active');
             renderGallery();
-            // Volver al loop después de 5 segundos
+            
+            // Usar configuración de tiempo de la galería
+            const galleryDuration = CONFIG?.gallery?.displayDuration || 15000;
+            console.log(`Mostrando galería por ${galleryDuration/1000} segundos`);
+            
+            // Volver al loop después del tiempo configurado
             setTimeout(() => {
                 changeState('loop');
-            }, 5000);
+            }, galleryDuration);
             break;
     }
 }
@@ -321,14 +326,18 @@ function initConfigPanel() {
         fuerzaSanJuan: document.getElementById('fuerzaSanJuanSlider'),
         fuerzaSolarpunk: document.getElementById('fuerzaSolarpunkSlider'),
         steps: document.getElementById('stepsSlider'),
-        variability: document.getElementById('variabilitySlider')
+        variability: document.getElementById('variabilitySlider'),
+        galleryDuration: document.getElementById('galleryDurationSlider'),
+        imageDuration: document.getElementById('imageDurationSlider')
     };
     const values = {
         fluxGuidance: document.getElementById('fluxGuidanceValue'),
         fuerzaSanJuan: document.getElementById('fuerzaSanJuanValue'),
         fuerzaSolarpunk: document.getElementById('fuerzaSolarpunkValue'),
         steps: document.getElementById('stepsValue'),
-        variability: document.getElementById('variabilityValue')
+        variability: document.getElementById('variabilityValue'),
+        galleryDuration: document.getElementById('galleryDurationValue'),
+        imageDuration: document.getElementById('imageDurationValue')
     };
 
     // Cargar configuración guardada
@@ -345,8 +354,15 @@ function initConfigPanel() {
     // Event listeners para sliders
     Object.keys(sliders).forEach(key => {
         sliders[key].addEventListener('input', () => {
-            const value = key === 'steps' ? parseInt(sliders[key].value) : parseFloat(sliders[key].value);
-            values[key].textContent = key === 'steps' ? value : value.toFixed(2);
+            const value = (key === 'steps' || key === 'galleryDuration' || key === 'imageDuration') ? 
+                         parseInt(sliders[key].value) : parseFloat(sliders[key].value);
+            
+            // Mostrar valor apropiado
+            if (key === 'steps' || key === 'galleryDuration' || key === 'imageDuration') {
+                values[key].textContent = value;
+            } else {
+                values[key].textContent = value.toFixed(2);
+            }
             
             // Actualizar CONFIG en tiempo real
             if (key === 'fluxGuidance') CONFIG.imageGeneration.fluxGuidance = value;
@@ -354,6 +370,8 @@ function initConfigPanel() {
             else if (key === 'fuerzaSolarpunk') CONFIG.imageGeneration.fuerzaSolarpunk = value;
             else if (key === 'steps') CONFIG.imageGeneration.steps = value;
             else if (key === 'variability') CONFIG.imageGeneration.variabilityFactor = value;
+            else if (key === 'galleryDuration') CONFIG.gallery.displayDuration = value * 1000; // Convertir a ms
+            else if (key === 'imageDuration') CONFIG.generatedImage.displayDuration = value * 1000; // Convertir a ms
             
             saveConfigToStorage();
         });
@@ -378,18 +396,44 @@ function initConfigPanel() {
         console.log('✅ Configuración guardada');
     });
 
+    // Botón test galería
+    document.getElementById('testGalleryBtn').addEventListener('click', () => {
+        console.log('🖼️ Probando galería...');
+        if (currentState !== 'gallery') {
+            changeState('gallery');
+        } else {
+            console.log('📸 Galería ya está activa');
+        }
+    });
+
     function updateSlidersFromConfig() {
         sliders.fluxGuidance.value = CONFIG.imageGeneration.fluxGuidance;
         sliders.fuerzaSanJuan.value = CONFIG.imageGeneration.fuerzaSanJuan;
         sliders.fuerzaSolarpunk.value = CONFIG.imageGeneration.fuerzaSolarpunk;
         sliders.steps.value = CONFIG.imageGeneration.steps;
         sliders.variability.value = CONFIG.imageGeneration.variabilityFactor;
+        
+        // Agregar sliders de galería
+        if (sliders.galleryDuration) {
+            sliders.galleryDuration.value = (CONFIG.gallery?.displayDuration || 15000) / 1000;
+        }
+        if (sliders.imageDuration) {
+            sliders.imageDuration.value = (CONFIG.generatedImage?.displayDuration || 5000) / 1000;
+        }
 
         values.fluxGuidance.textContent = CONFIG.imageGeneration.fluxGuidance.toFixed(1);
         values.fuerzaSanJuan.textContent = CONFIG.imageGeneration.fuerzaSanJuan.toFixed(2);
         values.fuerzaSolarpunk.textContent = CONFIG.imageGeneration.fuerzaSolarpunk.toFixed(2);
         values.steps.textContent = CONFIG.imageGeneration.steps;
         values.variability.textContent = CONFIG.imageGeneration.variabilityFactor.toFixed(2);
+        
+        // Agregar valores de galería
+        if (values.galleryDuration) {
+            values.galleryDuration.textContent = (CONFIG.gallery?.displayDuration || 15000) / 1000;
+        }
+        if (values.imageDuration) {
+            values.imageDuration.textContent = (CONFIG.generatedImage?.displayDuration || 5000) / 1000;
+        }
     }
 
     function saveConfigToStorage() {
