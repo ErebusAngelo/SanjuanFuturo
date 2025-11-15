@@ -152,6 +152,14 @@
             object-fit: contain;
             animation: legendaryReveal 1.5s ease-out;
             filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.5));
+            transition: all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .image-content img.transitioning {
+            border-radius: 50%;
+            transform: scale(0.4) translate(0, 150px);
+            opacity: 0.8;
+            filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.8));
         }
 
         @keyframes legendaryReveal {
@@ -226,12 +234,65 @@
         }
 
         .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 5px;
+            position: relative;
             width: 100%;
             height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
+        /* Contenedor circular para las imágenes */
+        .gallery-circle {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, rgba(0, 212, 255, 0.05) 50%, transparent 100%);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            box-shadow: 
+                0 0 30px rgba(0, 212, 255, 0.4),
+                inset 0 0 30px rgba(0, 212, 255, 0.1);
+            animation: galleryPulse 3s ease-in-out infinite;
+        }
+
+        /* Imagen central más grande */
+        .gallery-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #00D4FF;
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.8);
+            z-index: 10;
+            animation: centerImageFloat 4s ease-in-out infinite;
+        }
+
+        /* Imágenes orbitales alrededor del círculo */
+        .gallery-orbital {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid rgba(0, 212, 255, 0.7);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.6);
+            transition: all 0.3s ease;
+            animation: orbitalFloat 6s ease-in-out infinite;
+        }
+
+        .gallery-orbital:hover {
+            transform: scale(1.2);
+            border-color: #00D4FF;
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.9);
+            z-index: 5;
+        }
+
+        /* Posiciones orbitales calculadas dinámicamente en JavaScript */
 
         .gallery-item {
             aspect-ratio: 1;
@@ -245,6 +306,117 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        /* Animaciones para la galería */
+        @keyframes galleryPulse {
+            0%, 100% {
+                box-shadow: 
+                    0 0 30px rgba(0, 212, 255, 0.4),
+                    inset 0 0 30px rgba(0, 212, 255, 0.1);
+                border-color: rgba(0, 212, 255, 0.3);
+            }
+            50% {
+                box-shadow: 
+                    0 0 50px rgba(0, 212, 255, 0.6),
+                    inset 0 0 50px rgba(0, 212, 255, 0.2);
+                border-color: rgba(0, 212, 255, 0.5);
+            }
+        }
+
+        @keyframes centerImageFloat {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                box-shadow: 0 0 25px rgba(0, 212, 255, 0.8);
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.05);
+                box-shadow: 0 0 35px rgba(0, 212, 255, 1);
+            }
+        }
+
+        @keyframes orbitalFloat {
+            0%, 100% {
+                transform: translateY(0px) scale(1);
+                box-shadow: 0 0 15px rgba(0, 212, 255, 0.6);
+            }
+            50% {
+                transform: translateY(-5px) scale(1.02);
+                box-shadow: 0 0 20px rgba(0, 212, 255, 0.8);
+            }
+        }
+
+        /* Animación de entrada de la galería */
+        @keyframes galleryEnter {
+            0% {
+                opacity: 0;
+                transform: scale(0.3) rotate(-180deg);
+            }
+            60% {
+                opacity: 0.8;
+                transform: scale(1.1) rotate(10deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        /* Animación de entrada escalonada para imágenes orbitales */
+        @keyframes orbitalEnter {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotate(180deg);
+            }
+            70% {
+                opacity: 0.9;
+                transform: scale(1.2) rotate(-10deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        /* Aplicar animaciones de entrada */
+        .gallery-content.active .gallery-circle {
+            animation: galleryEnter 1.2s ease-out, galleryPulse 3s ease-in-out infinite 1.2s;
+        }
+
+        .gallery-content.active .gallery-center {
+            animation: orbitalEnter 0.8s ease-out 0.3s both, centerImageFloat 4s ease-in-out infinite 1.1s;
+        }
+
+        .gallery-content.active .gallery-orbital:nth-child(2) {
+            animation: orbitalEnter 0.6s ease-out 0.4s both, orbitalFloat 6s ease-in-out infinite 1s;
+        }
+
+        .gallery-content.active .gallery-orbital:nth-child(3) {
+            animation: orbitalEnter 0.6s ease-out 0.5s both, orbitalFloat 6s ease-in-out infinite 1.1s;
+        }
+
+        .gallery-content.active .gallery-orbital:nth-child(4) {
+            animation: orbitalEnter 0.6s ease-out 0.6s both, orbitalFloat 6s ease-in-out infinite 1.2s;
+        }
+
+        .gallery-content.active .gallery-orbital:nth-child(5) {
+            animation: orbitalEnter 0.6s ease-out 0.7s both, orbitalFloat 6s ease-in-out infinite 1.3s;
+        }
+
+        .gallery-content.active .gallery-orbital:nth-child(6) {
+            animation: orbitalEnter 0.6s ease-out 0.8s both, orbitalFloat 6s ease-in-out infinite 1.4s;
+        }
+
+        .gallery-content.active .gallery-orbital:nth-child(7) {
+            animation: orbitalEnter 0.6s ease-out 0.9s both, orbitalFloat 6s ease-in-out infinite 1.5s;
+        }
+
+        .gallery-content.active .gallery-orbital:nth-child(8) {
+            animation: orbitalEnter 0.6s ease-out 1s both, orbitalFloat 6s ease-in-out infinite 1.6s;
+        }
+
+        .gallery-content.active .gallery-orbital:nth-child(9) {
+            animation: orbitalEnter 0.6s ease-out 1.1s both, orbitalFloat 6s ease-in-out infinite 1.7s;
         }
 
         /* Barra de progreso circular */

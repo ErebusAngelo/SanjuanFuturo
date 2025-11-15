@@ -44,8 +44,14 @@
                 <input type="range" id="galleryDurationSlider" min="5" max="60" step="5" value="15">
             </div>
             <div class="config-group">
-                <label>Tiempo Imagen (seg): <span id="imageDurationValue">5</span></label>
-                <input type="range" id="imageDurationSlider" min="3" max="30" step="1" value="5">
+                <label for="imageDurationSlider">Tiempo Imagen (s):</label>
+                <input type="range" id="imageDurationSlider" min="3" max="15" value="5" step="1">
+                <span id="imageDurationValue">5</span>
+            </div>
+            <div class="config-group">
+                <label for="orbitalCountSlider">Imágenes Orbitales:</label>
+                <input type="range" id="orbitalCountSlider" min="3" max="12" value="8" step="1">
+                <span id="orbitalCountValue">8</span>
             </div>
         </div>
         <div class="config-actions">

@@ -91,13 +91,13 @@ function changeState(newState, data = {}) {
             document.getElementById('imageContent').classList.add('active');
             break;
         
-        case 'thanks':
-            // Mostrar agradecimiento
-            document.getElementById('thanksContent').classList.add('active');
-            // Mostrar galería después de 5 segundos
+        case 'mask':
+            // Mostrar máscara circular
+            document.getElementById('maskContent').classList.add('active');
+            // Transición a galería después de 2 segundos
             setTimeout(() => {
                 changeState('gallery');
-            }, 5000);
+            }, 2000);
             break;
         
         case 'gallery':
@@ -109,10 +109,19 @@ function changeState(newState, data = {}) {
             const galleryDuration = CONFIG?.gallery?.displayDuration || 15000;
             console.log(`Mostrando galería por ${galleryDuration/1000} segundos`);
             
-            // Volver al loop después del tiempo configurado
+            // Mostrar agradecimiento después del tiempo configurado
+            setTimeout(() => {
+                changeState('thanks');
+            }, galleryDuration);
+            break;
+        
+        case 'thanks':
+            // Mostrar agradecimiento
+            document.getElementById('thanksContent').classList.add('active');
+            // Volver al loop después de 5 segundos
             setTimeout(() => {
                 changeState('loop');
-            }, galleryDuration);
+            }, 5000);
             break;
     }
 }
@@ -137,10 +146,20 @@ function showGeneratedImage(imageUrl) {
     
     changeState('image');
     
-    // Mostrar agradecimiento después del tiempo configurado
-    const displayTime = CONFIG?.generatedImage?.displayDuration || 10000;
+    // Nuevo flujo: imagen → máscara circular → galería → gracias
+    const displayTime = CONFIG?.generatedImage?.displayDuration || 5000;
+    
+    // 1. Mostrar imagen cuadrada normal
     setTimeout(() => {
-        changeState('thanks');
+        // 2. Aplicar máscara circular y transición
+        console.log('🎭 Aplicando máscara circular...');
+        img.classList.add('transitioning');
+        
+        // 3. Después de la transición, mostrar galería
+        setTimeout(() => {
+            changeState('gallery');
+        }, 1500); // Tiempo de la transición CSS
+        
     }, displayTime);
 }
 
@@ -156,34 +175,104 @@ async function loadExistingImages() {
     }
 }
 
-// Renderizar galería
+// Renderizar galería circular con cálculo radial matemático
 function renderGallery() {
     const grid = document.getElementById('galleryGrid');
     grid.innerHTML = '';
     
     if (galleryImages.length === 0) {
-        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #00D4FF;">No hay imágenes en la galería</div>';
+        grid.innerHTML = '<div style="text-align: center; color: #00D4FF; font-size: 1.5rem;">No hay imágenes en la galería</div>';
         return;
     }
     
-    // Si hay menos de 9 imágenes, duplicar para llenar el grid
-    let imagesToShow = [...galleryImages];
-    while (imagesToShow.length < 9 && galleryImages.length > 0) {
-        imagesToShow = [...imagesToShow, ...galleryImages];
+    // Configuración de la galería
+    const maxOrbitalImages = CONFIG?.gallery?.maxOrbitalImages || 8;
+    const circleRadius = 160; // Radio del círculo orbital (400px container / 2 - 40px margin)
+    const imageSize = 80; // Tamaño de las imágenes orbitales
+    
+    // La imagen más reciente SIEMPRE va al centro
+    const centerImage = galleryImages[galleryImages.length - 1]; // ÚLTIMA = MÁS RECIENTE
+    
+    // Resto de imágenes para orbitales (excluyendo la central)
+    const orbitalImages = galleryImages.slice(0, -1).slice(-maxOrbitalImages);
+    
+    console.log(`🎯 Imagen central: ${centerImage}`);
+    console.log(`🌍 Imágenes orbitales: ${orbitalImages.length}`);
+    
+    // Crear contenedor circular
+    const circleContainer = document.createElement('div');
+    circleContainer.className = 'gallery-circle';
+    
+    // Crear imagen central (SIEMPRE la más reciente)
+    if (centerImage) {
+        const centerItem = document.createElement('div');
+        centerItem.className = 'gallery-center';
+        
+        const centerImg = document.createElement('img');
+        centerImg.src = centerImage;
+        centerImg.alt = 'Imagen Recién Generada';
+        centerImg.style.width = '100%';
+        centerImg.style.height = '100%';
+        centerImg.style.objectFit = 'cover';
+        
+        centerItem.appendChild(centerImg);
+        circleContainer.appendChild(centerItem);
     }
     
-    // Mostrar 9 imágenes
-    for (let i = 0; i < Math.min(9, imagesToShow.length); i++) {
-        const item = document.createElement('div');
-        item.className = 'gallery-item';
+    // Crear imágenes orbitales con cálculo radial matemático
+    orbitalImages.forEach((imageSrc, index) => {
+        const orbitalItem = document.createElement('div');
+        orbitalItem.className = 'gallery-orbital';
         
-        const img = document.createElement('img');
-        img.src = imagesToShow[i];
-        img.alt = `Imagen ${i + 1}`;
+        // CÁLCULO RADIAL MATEMÁTICO CORRECTO
+        const totalImages = orbitalImages.length;
+        const angleStep = (2 * Math.PI) / totalImages; // Dividir círculo en partes iguales
+        const angle = index * angleStep - (Math.PI / 2); // Empezar desde arriba (-90°)
         
-        item.appendChild(img);
-        grid.appendChild(item);
-    }
+        // Calcular posición X,Y usando trigonometría
+        const x = Math.cos(angle) * circleRadius;
+        const y = Math.sin(angle) * circleRadius;
+        
+        // Centrar en el contenedor (200px = centro del contenedor de 400px)
+        const centerX = 200 - (imageSize / 2);
+        const centerY = 200 - (imageSize / 2);
+        
+        // Posición final
+        const finalX = centerX + x;
+        const finalY = centerY + y;
+        
+        // Aplicar posición calculada
+        orbitalItem.style.left = `${finalX}px`;
+        orbitalItem.style.top = `${finalY}px`;
+        orbitalItem.style.position = 'absolute';
+        
+        console.log(`🔮 Imagen ${index + 1}: ángulo=${(angle * 180 / Math.PI).toFixed(1)}°, x=${finalX.toFixed(1)}, y=${finalY.toFixed(1)}`);
+        
+        const orbitalImg = document.createElement('img');
+        orbitalImg.src = imageSrc;
+        orbitalImg.alt = `Imagen Orbital ${index + 1}`;
+        orbitalImg.style.width = '100%';
+        orbitalImg.style.height = '100%';
+        orbitalImg.style.objectFit = 'cover';
+        
+        // Agregar efecto hover interactivo
+        orbitalItem.addEventListener('mouseenter', () => {
+            orbitalItem.style.transform = 'scale(1.3)';
+            orbitalItem.style.zIndex = '15';
+        });
+        
+        orbitalItem.addEventListener('mouseleave', () => {
+            orbitalItem.style.transform = 'scale(1)';
+            orbitalItem.style.zIndex = '1';
+        });
+        
+        orbitalItem.appendChild(orbitalImg);
+        circleContainer.appendChild(orbitalItem);
+    });
+    
+    grid.appendChild(circleContainer);
+    
+    console.log(`📸 Galería circular renderizada: 1 central + ${orbitalImages.length} orbitales`);
 }
 
 // Activar audio del video al hacer click
@@ -328,7 +417,8 @@ function initConfigPanel() {
         steps: document.getElementById('stepsSlider'),
         variability: document.getElementById('variabilitySlider'),
         galleryDuration: document.getElementById('galleryDurationSlider'),
-        imageDuration: document.getElementById('imageDurationSlider')
+        imageDuration: document.getElementById('imageDurationSlider'),
+        orbitalCount: document.getElementById('orbitalCountSlider')
     };
     const values = {
         fluxGuidance: document.getElementById('fluxGuidanceValue'),
@@ -337,7 +427,8 @@ function initConfigPanel() {
         steps: document.getElementById('stepsValue'),
         variability: document.getElementById('variabilityValue'),
         galleryDuration: document.getElementById('galleryDurationValue'),
-        imageDuration: document.getElementById('imageDurationValue')
+        imageDuration: document.getElementById('imageDurationValue'),
+        orbitalCount: document.getElementById('orbitalCountValue')
     };
 
     // Cargar configuración guardada
@@ -354,16 +445,16 @@ function initConfigPanel() {
     // Event listeners para sliders
     Object.keys(sliders).forEach(key => {
         sliders[key].addEventListener('input', () => {
-            const value = (key === 'steps' || key === 'galleryDuration' || key === 'imageDuration') ? 
+            const value = (key === 'steps' || key === 'galleryDuration' || key === 'imageDuration' || key === 'orbitalCount') ? 
                          parseInt(sliders[key].value) : parseFloat(sliders[key].value);
-            
+
             // Mostrar valor apropiado
-            if (key === 'steps' || key === 'galleryDuration' || key === 'imageDuration') {
+            if (key === 'steps' || key === 'galleryDuration' || key === 'imageDuration' || key === 'orbitalCount') {
                 values[key].textContent = value;
             } else {
                 values[key].textContent = value.toFixed(2);
             }
-            
+
             // Actualizar CONFIG en tiempo real
             if (key === 'fluxGuidance') CONFIG.imageGeneration.fluxGuidance = value;
             else if (key === 'fuerzaSanJuan') CONFIG.imageGeneration.fuerzaSanJuan = value;
@@ -372,7 +463,8 @@ function initConfigPanel() {
             else if (key === 'variability') CONFIG.imageGeneration.variabilityFactor = value;
             else if (key === 'galleryDuration') CONFIG.gallery.displayDuration = value * 1000; // Convertir a ms
             else if (key === 'imageDuration') CONFIG.generatedImage.displayDuration = value * 1000; // Convertir a ms
-            
+            else if (key === 'orbitalCount') CONFIG.gallery.maxOrbitalImages = value;
+
             saveConfigToStorage();
         });
     });
@@ -393,7 +485,7 @@ function initConfigPanel() {
     // Botón guardar
     document.getElementById('saveConfigBtn').addEventListener('click', () => {
         saveConfigToStorage();
-        console.log('✅ Configuración guardada');
+        console.log(' Configuración guardada');
     });
 
     // Botón test galería
@@ -420,6 +512,9 @@ function initConfigPanel() {
         if (sliders.imageDuration) {
             sliders.imageDuration.value = (CONFIG.generatedImage?.displayDuration || 5000) / 1000;
         }
+        if (sliders.orbitalCount) {
+            sliders.orbitalCount.value = CONFIG.gallery?.maxOrbitalImages || 8;
+        }
 
         values.fluxGuidance.textContent = CONFIG.imageGeneration.fluxGuidance.toFixed(1);
         values.fuerzaSanJuan.textContent = CONFIG.imageGeneration.fuerzaSanJuan.toFixed(2);
@@ -433,6 +528,9 @@ function initConfigPanel() {
         }
         if (values.imageDuration) {
             values.imageDuration.textContent = (CONFIG.generatedImage?.displayDuration || 5000) / 1000;
+        }
+        if (values.orbitalCount) {
+            values.orbitalCount.textContent = CONFIG.gallery?.maxOrbitalImages || 8;
         }
     }
 

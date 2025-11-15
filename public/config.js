@@ -36,14 +36,12 @@ const CONFIG = {
     
     // Avatar.html - Galería
     gallery: {
-        gridGap: '5px',           // Separación entre imágenes
-        itemBorderRadius: '1px',   // Radio de borde de cada imagen
-        itemBorder: '2px solid #00D4FF', // Borde de cada imagen
-        glowIntensity: '10px',     // Glow de las imágenes
-        displayDuration: 90000000,    // Tiempo que se muestra la galería (15 segundos)
-        transitionDuration: 1000,  // Duración de la transición de entrada/salida
-        autoScroll: true,          // Auto-scroll si hay muchas imágenes
-        scrollSpeed: 2000          // Velocidad del auto-scroll (ms por imagen)
+        gridGap: '15px',
+        itemBorderRadius: '8px',
+        itemBorder: '2px solid #00D4FF',
+        glowIntensity: 0.5,
+        displayDuration: 15000, // 15 segundos por defecto
+        maxOrbitalImages: 8 // Cantidad máxima de imágenes orbitales
     },
     
     // Avatar.html - Marco circular
