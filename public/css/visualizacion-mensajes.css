@@ -116,7 +116,7 @@
 /* Texto del deseo */
 .message-wish {
     font-family: 'Roboto', sans-serif;
-    font-size: 16px;
+    font-size: 24px;
     font-weight: 300;
     color: var(--primary-color);
     text-align: center;
