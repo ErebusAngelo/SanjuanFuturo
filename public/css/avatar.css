@@ -145,13 +145,13 @@
         }
 
         .image-content img {
-            max-width: 400px;
+            max-width: 300px;
             max-height: 400px;
             width: auto;
             height: auto;
             object-fit: contain;
             animation: legendaryReveal 1.5s ease-out;
-            filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.8));
+            filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.5));
         }
 
         @keyframes legendaryReveal {
