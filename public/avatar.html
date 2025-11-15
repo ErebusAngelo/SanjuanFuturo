@@ -6,27 +6,9 @@
     <title>Pantalla LED - Avatar</title>
     <script src="config.js"></script>
     <link rel="stylesheet" href="css/avatar.css">
-
 </head>
 <body>
     <div class="connection-indicator" id="connectionIndicator"></div>
-    
-    <!-- Panel secreto de control (Ctrl+Shift+V para mostrar/ocultar) -->
-    <div class="secret-panel" id="secretPanel" style="display: none;">
-        <h3>🎮 Control Secreto</h3>
-        <div class="controls">
-            <button id="playBtn">▶️ PLAY</button>
-            <button id="pauseBtn">⏸️ PAUSE</button>
-            <button id="restartBtn">🔄 RESTART</button>
-            <button id="muteBtn">🔊 MUTE/UNMUTE</button>
-        </div>
-        <div class="info">
-            <div>Estado: <span id="videoStatus">-</span></div>
-            <div>Tiempo: <span id="videoTime">0:00 / 0:00</span></div>
-            <div>Muted: <span id="muteStatus">-</span></div>
-        </div>
-        <div class="hotkey">Presiona Ctrl+Shift+V para ocultar</div>
-    </div>
     
     <div class="led-screen">
         <!-- Marco circular principal - SIEMPRE VISIBLE -->
@@ -48,7 +30,8 @@
                         stroke-dashoffset="471.24"
                         id="progressCircle" />
             </svg>
-            
+    
+
             <!-- Contenedor de contenido - cambia según el estado -->
             <div class="content-circle">
                 <!-- Video Loop -->

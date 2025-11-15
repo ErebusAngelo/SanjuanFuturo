@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pantalla LED - Avatar</title>
+    <script src="config.js"></script>
+    <link rel="stylesheet" href="css/avatar.css">
+
+</head>
+<body>
+    <div class="connection-indicator" id="connectionIndicator"></div>
+    
+    <!-- Panel secreto de control (Ctrl+Shift+V para mostrar/ocultar) -->
+    <div class="secret-panel" id="secretPanel" style="display: none;">
+        <h3>🎮 Control Secreto</h3>
+        <div class="controls">
+            <button id="playBtn">▶️ PLAY</button>
+            <button id="pauseBtn">⏸️ PAUSE</button>
+            <button id="restartBtn">🔄 RESTART</button>
+            <button id="muteBtn">🔊 MUTE/UNMUTE</button>
+        </div>
+        <div class="info">
+            <div>Estado: <span id="videoStatus">-</span></div>
+            <div>Tiempo: <span id="videoTime">0:00 / 0:00</span></div>
+            <div>Muted: <span id="muteStatus">-</span></div>
+        </div>
+        <div class="hotkey">Presiona Ctrl+Shift+V para ocultar</div>
+    </div>
+    
+    <div class="led-screen">
+        <!-- Marco circular principal - SIEMPRE VISIBLE -->
+        <div class="main-circle-frame">
+            <!-- Línea circular giratoria - SIEMPRE VISIBLE -->
+            <svg class="rotating-arc" viewBox="0 0 200 200">
+                <path d="M 100,10 A 90,90 0 1,1 100,190" 
+                      fill="none" 
+                      stroke="#00D4FF" 
+                      stroke-width="3"
+                      stroke-linecap="round"
+                      style="filter: drop-shadow(0 0 5px rgba(0, 212, 255, 0.7)) drop-shadow(0 0 10px rgba(0, 212, 255, 0.4));" />
+            </svg>
+            
+            <!-- Barra de progreso (solo visible en loading) -->
+            <svg class="progress-arc" id="progressArc" viewBox="0 0 200 200">
+                <circle cx="100" cy="100" r="75" 
+                        stroke-dasharray="471.24" 
+                        stroke-dashoffset="471.24"
+                        id="progressCircle" />
+            </svg>
+            
+            <!-- Contenedor de contenido - cambia según el estado -->
+            <div class="content-circle">
+                <!-- Video Loop -->
+                <div class="video-content active" id="videoContent">
+                    <video id="loopVideo" autoplay loop muted playsinline preload="auto">
+                        <source src="video/ceci.mp4" type="video/mp4">
+                        Tu navegador no soporta video HTML5.
+                    </video>
+                </div>
+                
+                <!-- Loading -->
+                <div class="thanks-content" id="loadingContent">
+                    <h2>GENERANDO<br>IMAGEN</h2>
+                </div>
+                
+                <!-- Imagen Generada -->
+                <div class="image-content" id="imageContent">
+                    <img id="generatedImage" src="" alt="Imagen generada">
+                </div>
+                
+                <!-- Agradecimiento -->
+                <div class="thanks-content" id="thanksContent">
+                    <h1>¡GRACIAS POR PARTICIPAR!</h1>
+                    <p>SAN JUAN FUTURO</p>
+                </div>
+                
+                <!-- Galería -->
+                <div class="gallery-content" id="galleryContent">
+                    <div class="gallery-grid" id="galleryGrid">
+                        <!-- Imágenes se cargan dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <script src="background.js"></script>
+    <script src="js/avatar.js"></script>
+</body>
+</html>

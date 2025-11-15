@@ -190,6 +190,73 @@ function enableAudio() {
     }
 }
 
+let lastVideoTime = 0;
+let stuckCounter = 0;
+let recoveryAttempts = 0;
+
+function initVideoStuckDetector() {
+    const video = document.getElementById('loopVideo');
+    
+    setInterval(() => {
+        if (currentState === 'loop' && video) {
+            const currentTime = video.currentTime;
+            
+            // Si el video debería estar reproduciéndose pero el tiempo no avanza
+            if (!video.paused && !video.ended) {
+                if (Math.abs(currentTime - lastVideoTime) < 0.1) {
+                    stuckCounter++;
+                    console.log(`⚠️ Video posiblemente clavado - Contador: ${stuckCounter} - Tiempo: ${currentTime.toFixed(2)}s`);
+                    
+                    // Si está clavado por más de 3 segundos, intentar recuperar
+                    if (stuckCounter >= 3) {
+                        console.log(`🚨 VIDEO CLAVADO DETECTADO en ${currentTime.toFixed(2)}s - Iniciando recuperación`);
+                        recoverStuckVideo();
+                    }
+                } else {
+                    // El video está avanzando normalmente, resetear contador
+                    if (stuckCounter > 0) {
+                        console.log(`✅ Video recuperado - Tiempo: ${currentTime.toFixed(2)}s`);
+                        stuckCounter = 0;
+                        recoveryAttempts = 0;
+                    }
+                }
+            } else {
+                stuckCounter = 0; // Resetear si está pausado intencionalmente
+            }
+            
+            lastVideoTime = currentTime;
+        }
+    }, 1000); // Verificar cada segundo
+}
+
+function recoverStuckVideo() {
+    const video = document.getElementById('loopVideo');
+    recoveryAttempts++;
+    
+    console.log(`🔧 Intento de recuperación #${recoveryAttempts}`);
+    
+    if (recoveryAttempts <= 3) {
+        // Método 1: Reiniciar reproducción
+        video.pause();
+        setTimeout(() => {
+            video.play().catch(e => console.log('Error en recuperación:', e));
+        }, 100);
+    } else if (recoveryAttempts <= 6) {
+        // Método 2: Saltar un poco hacia adelante
+        console.log('🔧 Saltando 0.5 segundos adelante');
+        video.currentTime += 0.5;
+        video.play().catch(e => console.log('Error en salto:', e));
+    } else {
+        // Método 3: Reiniciar desde el principio
+        console.log('🔧 Reiniciando video desde el principio');
+        video.currentTime = 0;
+        video.play().catch(e => console.log('Error en reinicio:', e));
+        recoveryAttempts = 0; // Resetear para el próximo ciclo
+    }
+    
+    stuckCounter = 0; // Resetear contador después del intento
+}
+
 // Panel secreto de control
 function initSecretPanel() {
     const panel = document.getElementById('secretPanel');
@@ -251,6 +318,7 @@ window.addEventListener('load', () => {
     connectWebSocket();
     loadExistingImages();
     initSecretPanel(); // Inicializar panel secreto
+    initVideoStuckDetector(); // Inicializar detector automático
     
     // Activar audio al hacer click en cualquier parte
     document.body.addEventListener('click', enableAudio, { once: true });
