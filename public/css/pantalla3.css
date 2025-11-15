@@ -369,8 +369,10 @@
     margin: 0;
     text-shadow: 0 0 20px rgba(0, 212, 255, 0.8),
                  0 0 40px rgba(0, 212, 255, 0.4);
-    white-space: nowrap;
+    white-space: normal;
     min-height: 40px;
+    max-width: 90%;
+    line-height: 1.2;
 }
 
 /* Indicadores de categoría */

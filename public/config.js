@@ -14,7 +14,8 @@ const CONFIG = {
         maxHeight: '100px',
         glowColor: '#00D4FF',      // Color del glow (celeste principal)
         glowIntensity: '30px',     // Intensidad del glow
-        animationDuration: '1.5s'  // Duración de la animación de reveal
+        animationDuration: '1.5s', // Duración de la animación de reveal
+        displayDuration: 600000     // Tiempo que permanece visible la imagen (10 segundos)
     },
     
     // Avatar.html - Barra de progreso

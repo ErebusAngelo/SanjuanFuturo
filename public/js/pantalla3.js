@@ -419,8 +419,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const currentCategory = categoriesData[currentCategoryIndex]
     const visibleOptions = document.querySelectorAll('.option-item:not([style*="display: none"])')
 
-    // Si se han seleccionado al menos 2 opciones, avanzar
+    // Si se han seleccionado al menos 2 opciones, deshabilitar drag y avanzar
     if (userSelections[currentCategory.id]?.length >= 2) {
+      // Deshabilitar todas las opciones restantes para evitar un tercer drag
+      const remainingOptions = document.querySelectorAll('.option-item:not([style*="display: none"])')
+      remainingOptions.forEach(option => {
+        option.style.pointerEvents = 'none'
+        option.style.opacity = '0.5'
+      })
+      
       // Esperar un momento antes de cambiar de categoría
       setTimeout(() => {
         nextCategory()
