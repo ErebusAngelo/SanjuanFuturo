@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Debug Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: black;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .test-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .video-test {
+            border: 2px solid #00D4FF;
+            padding: 10px;
+            width: 300px;
+        }
+        video {
+            width: 100%;
+            height: 200px;
+        }
+        .info {
+            margin-top: 10px;
+            font-size: 12px;
+        }
+        .stats {
+            background: #333;
+            padding: 10px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Diagnóstico de Video - Detectar Causa del Tilde</h1>
+    
+    <div class="stats" id="systemStats">
+        <h3>Información del Sistema:</h3>
+        <div id="browserInfo"></div>
+        <div id="performanceInfo"></div>
+    </div>
+
+    <div class="test-container">
+        <!-- Test 1: Video básico sin atributos -->
+        <div class="video-test">
+            <h3>Test 1: Básico</h3>
+            <video id="video1" controls>
+                <source src="video/loop.mp4" type="video/mp4">
+            </video>
+            <div class="info" id="info1">Sin autoplay, solo controles</div>
+        </div>
+
+        <!-- Test 2: Video con autoplay -->
+        <div class="video-test">
+            <h3>Test 2: Autoplay</h3>
+            <video id="video2" autoplay muted controls>
+                <source src="video/loop.mp4" type="video/mp4">
+            </video>
+            <div class="info" id="info2">Con autoplay y muted</div>
+        </div>
+
+        <!-- Test 3: Video completo como avatar -->
+        <div class="video-test">
+            <h3>Test 3: Avatar Style</h3>
+            <video id="video3" autoplay loop muted playsinline preload="auto" controls>
+                <source src="video/loop.mp4" type="video/mp4">
+            </video>
+            <div class="info" id="info3">Configuración completa de avatar</div>
+        </div>
+
+        <!-- Test 4: Video con CSS circular -->
+        <div class="video-test">
+            <h3>Test 4: CSS Circular</h3>
+            <video id="video4" autoplay loop muted playsinline preload="auto" controls 
+                   style="border-radius: 50%; object-fit: cover;">
+                <source src="video/loop.mp4" type="video/mp4">
+            </video>
+            <div class="info" id="info4">Con border-radius como avatar</div>
+        </div>
+    </div>
+
+    <div class="stats">
+        <h3>Logs en Tiempo Real:</h3>
+        <div id="logs" style="height: 200px; overflow-y: scroll; background: #222; padding: 10px;"></div>
+    </div>
+
+    <script>
+        const logs = document.getElementById('logs');
+        
+        function log(message) {
+            const time = new Date().toLocaleTimeString();
+            logs.innerHTML += `[${time}] ${message}<br>`;
+            logs.scrollTop = logs.scrollHeight;
+            console.log(message);
+        }
+
+        // Información del sistema
+        document.getElementById('browserInfo').innerHTML = `
+            <strong>Navegador:</strong> ${navigator.userAgent}<br>
+            <strong>Plataforma:</strong> ${navigator.platform}<br>
+            <strong>Memoria:</strong> ${navigator.deviceMemory || 'No disponible'} GB<br>
+            <strong>Cores:</strong> ${navigator.hardwareConcurrency || 'No disponible'}
+        `;
+
+        // Performance info
+        if (performance.memory) {
+            document.getElementById('performanceInfo').innerHTML = `
+                <strong>Memoria JS Usada:</strong> ${Math.round(performance.memory.usedJSHeapSize / 1024 / 1024)} MB<br>
+                <strong>Memoria JS Total:</strong> ${Math.round(performance.memory.totalJSHeapSize / 1024 / 1024)} MB<br>
+                <strong>Límite Memoria:</strong> ${Math.round(performance.memory.jsHeapSizeLimit / 1024 / 1024)} MB
+            `;
+        }
+
+        // Monitorear todos los videos
+        for (let i = 1; i <= 4; i++) {
+            const video = document.getElementById(`video${i}`);
+            const info = document.getElementById(`info${i}`);
+            
+            video.addEventListener('loadstart', () => log(`Video ${i}: Iniciando carga`));
+            video.addEventListener('loadedmetadata', () => {
+                log(`Video ${i}: Metadata cargada - ${video.videoWidth}x${video.videoHeight}, ${video.duration.toFixed(2)}s`);
+            });
+            video.addEventListener('loadeddata', () => log(`Video ${i}: Datos cargados`));
+            video.addEventListener('canplay', () => log(`Video ${i}: Puede reproducir`));
+            video.addEventListener('canplaythrough', () => log(`Video ${i}: Puede reproducir completamente`));
+            video.addEventListener('play', () => log(`Video ${i}: ▶️ REPRODUCIENDO`));
+            video.addEventListener('pause', () => log(`Video ${i}: ⏸️ PAUSADO`));
+            video.addEventListener('ended', () => log(`Video ${i}: ⏹️ TERMINADO`));
+            video.addEventListener('waiting', () => log(`Video ${i}: ⏳ ESPERANDO (buffering)`));
+            video.addEventListener('stalled', () => log(`Video ${i}: 🚫 STALLED (red lenta)`));
+            video.addEventListener('suspend', () => log(`Video ${i}: ⏸️ SUSPENDIDO (navegador pausó)`));
+            video.addEventListener('abort', () => log(`Video ${i}: ❌ ABORTADO`));
+            video.addEventListener('error', (e) => {
+                log(`Video ${i}: ❌ ERROR - ${e.target.error?.message || 'Error desconocido'}`);
+                if (e.target.error) {
+                    log(`Video ${i}: Código de error: ${e.target.error.code}`);
+                }
+            });
+
+            // Monitoreo cada segundo
+            setInterval(() => {
+                if (video.readyState >= 2) { // HAVE_CURRENT_DATA
+                    const buffered = video.buffered.length > 0 ? 
+                        `${(video.buffered.end(0) / video.duration * 100).toFixed(1)}%` : '0%';
+                    info.innerHTML = `
+                        Estado: ${video.paused ? '⏸️ Pausado' : '▶️ Reproduciendo'}<br>
+                        Tiempo: ${video.currentTime.toFixed(1)}s / ${video.duration.toFixed(1)}s<br>
+                        Buffer: ${buffered}<br>
+                        ReadyState: ${video.readyState}/4
+                    `;
+                }
+            }, 1000);
+        }
+
+        // Monitoreo de performance
+        setInterval(() => {
+            if (performance.memory) {
+                const used = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
+                if (used > 100) { // Si usa más de 100MB
+                    log(`⚠️ Memoria alta: ${used} MB`);
+                }
+            }
+        }, 5000);
+
+        log('🚀 Diagnóstico iniciado - Observa cuál video se tilda primero');
+    </script>
+</body>
+</html>

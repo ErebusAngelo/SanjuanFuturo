@@ -76,76 +76,7 @@ function changeState(newState, data = {}) {
         case 'loop':
             // Mostrar video
             document.getElementById('videoContent').classList.add('active');
-            const loopVideo = document.getElementById('loopVideo');
-            if (loopVideo) {
-                // Configurar propiedades del video
-                loopVideo.muted = true;
-                loopVideo.autoplay = true;
-                loopVideo.loop = true;
-                loopVideo.playsInline = true;
-                loopVideo.preload = 'auto';
-                
-                // Agregar event listeners para monitorear el estado
-                loopVideo.addEventListener('pause', () => {
-                    console.log('Video pausado, reintentando reproducir...');
-                    setTimeout(() => {
-                        if (currentState === 'loop') {
-                            loopVideo.play().catch(e => console.log('Error al reiniciar video:', e));
-                        }
-                    }, 100);
-                });
-                
-                loopVideo.addEventListener('ended', () => {
-                    console.log('Video terminado, reiniciando...');
-                    if (currentState === 'loop') {
-                        loopVideo.currentTime = 0;
-                        loopVideo.play().catch(e => console.log('Error al reiniciar video:', e));
-                    }
-                });
-                
-                loopVideo.addEventListener('error', (e) => {
-                    console.error('Error en el video:', e);
-                    // Recargar el video si hay error
-                    setTimeout(() => {
-                        loopVideo.load();
-                        if (currentState === 'loop') {
-                            loopVideo.play().catch(err => console.log('Error tras recargar:', err));
-                        }
-                    }, 1000);
-                });
-                
-                // Reiniciar desde el principio
-                loopVideo.currentTime = 0;
-                
-                // Intentar reproducir con manejo de errores mejorado
-                const playPromise = loopVideo.play();
-                if (playPromise !== undefined) {
-                    playPromise
-                        .then(() => {
-                            console.log('Video reproduciendo correctamente');
-                        })
-                        .catch(error => {
-                            console.log('Error al reproducir video:', error);
-                            // Reintentar múltiples veces
-                            let retryCount = 0;
-                            const maxRetries = 5;
-                            
-                            const retryPlay = () => {
-                                if (retryCount < maxRetries && currentState === 'loop') {
-                                    retryCount++;
-                                    console.log(`Intento ${retryCount} de ${maxRetries}`);
-                                    setTimeout(() => {
-                                        loopVideo.play()
-                                            .then(() => console.log(`Éxito en intento ${retryCount}`))
-                                            .catch(() => retryPlay());
-                                    }, 500 * retryCount);
-                                }
-                            };
-                            
-                            retryPlay();
-                        });
-                }
-            }
+            // NO HACER NADA MÁS - el video ya tiene autoplay loop en el HTML
             break;
         
         case 'loading':
@@ -259,24 +190,67 @@ function enableAudio() {
     }
 }
 
-// Monitoreo periódico del video para asegurar reproducción continua
-function startVideoMonitoring() {
-    setInterval(() => {
-        if (currentState === 'loop') {
-            const loopVideo = document.getElementById('loopVideo');
-            if (loopVideo && loopVideo.paused && !loopVideo.ended) {
-                console.log('Video detectado pausado, reactivando...');
-                loopVideo.play().catch(e => console.log('Error en monitoreo:', e));
-            }
+// Panel secreto de control
+function initSecretPanel() {
+    const panel = document.getElementById('secretPanel');
+    const video = document.getElementById('loopVideo');
+    const playBtn = document.getElementById('playBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const muteBtn = document.getElementById('muteBtn');
+    const videoStatus = document.getElementById('videoStatus');
+    const videoTime = document.getElementById('videoTime');
+    const muteStatus = document.getElementById('muteStatus');
+
+    // Hotkey para mostrar/ocultar panel (Ctrl+Shift+V)
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.shiftKey && e.key === 'V') {
+            e.preventDefault();
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
         }
-    }, 2000); // Verificar cada 2 segundos
+    });
+
+    // Controles del video
+    playBtn.addEventListener('click', () => {
+        video.play().catch(e => console.log('Error play:', e));
+    });
+
+    pauseBtn.addEventListener('click', () => {
+        video.pause();
+    });
+
+    restartBtn.addEventListener('click', () => {
+        video.currentTime = 0;
+        video.play().catch(e => console.log('Error restart:', e));
+    });
+
+    muteBtn.addEventListener('click', () => {
+        video.muted = !video.muted;
+    });
+
+    // Actualizar información cada segundo
+    setInterval(() => {
+        if (video) {
+            videoStatus.textContent = video.paused ? '⏸️ Pausado' : '▶️ Reproduciendo';
+            
+            const current = Math.floor(video.currentTime);
+            const total = Math.floor(video.duration) || 0;
+            const currentMin = Math.floor(current / 60);
+            const currentSec = current % 60;
+            const totalMin = Math.floor(total / 60);
+            const totalSec = total % 60;
+            
+            videoTime.textContent = `${currentMin}:${currentSec.toString().padStart(2, '0')} / ${totalMin}:${totalSec.toString().padStart(2, '0')}`;
+            muteStatus.textContent = video.muted ? '🔇 Silenciado' : '🔊 Con audio';
+        }
+    }, 1000);
 }
 
 // Iniciar conexión al cargar
 window.addEventListener('load', () => {
     connectWebSocket();
     loadExistingImages();
-    startVideoMonitoring(); // Iniciar monitoreo del video
+    initSecretPanel(); // Inicializar panel secreto
     
     // Activar audio al hacer click en cualquier parte
     document.body.addEventListener('click', enableAudio, { once: true });

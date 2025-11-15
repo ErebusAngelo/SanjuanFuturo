@@ -316,16 +316,16 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            width: 20px;
-            height: 20px;
+            width: 15px;
+            height: 15px;
             border-radius: 50%;
-            background: #ff0000;
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            background: #ff4444;
             z-index: 1000;
+            transition: background 0.3s ease;
         }
 
         .connection-indicator.connected {
-            background: #00ff00;
+            background: #44ff44;
             box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
         }
 
@@ -347,4 +347,70 @@
                 width: 100vh;
                 height: 100vh;
             }
+        }
+
+        /* Panel secreto de control */
+        .secret-panel {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00D4FF;
+            border-radius: 10px;
+            padding: 15px;
+            z-index: 2000;
+            color: #00D4FF;
+            font-family: 'Arkitech', sans-serif;
+            min-width: 250px;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .secret-panel h3 {
+            margin: 0 0 10px 0;
+            text-align: center;
+            color: #00D4FF;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+
+        .secret-panel .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .secret-panel button {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid #00D4FF;
+            color: #00D4FF;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .secret-panel button:hover {
+            background: rgba(0, 212, 255, 0.2);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
+        }
+
+        .secret-panel .info {
+            font-size: 11px;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+
+        .secret-panel .info span {
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .secret-panel .hotkey {
+            font-size: 10px;
+            text-align: center;
+            opacity: 0.7;
+            font-style: italic;
         }
